@@ -17,6 +17,7 @@ const sections = [
   { id: 'market', label: 'Market & Competition' },
   { id: 'gtm', label: 'Go-To-Market' },
   { id: 'financials', label: 'Financials' },
+  { id: 'seed-plan', label: 'Seed Plan & Use of Funds' },
   { id: 'playbooks', label: 'AI Governance Playbooks' },
   { id: 'memo', label: 'Investor Memo' },
   { id: 'jeff-view', label: 'The Jeff View' },
@@ -460,6 +461,7 @@ export default function App() {
           <MarketSection />
           <GtmSection />
           <FinancialsSection />
+          <SeedPlanSection />
           <PlaybooksSection />
           <MemoSection />
           <JeffViewSection />
@@ -852,9 +854,231 @@ function FinancialsSection() {
   )
 }
 
+function SeedPlanSection() {
+  return (
+    <SectionFrame
+      id="seed-plan"
+      kicker="08"
+      title="Seed plan, use of funds & PMF strategy"
+    >
+      <div className="grid-2">
+        <div>
+          <p>
+            Assume a <strong>$2.5M seed round</strong> with a target runway of{' '}
+            <strong>18–24 months</strong> to reach ~<strong>$1M ARR</strong> and clear PMF signals.
+          </p>
+          <div className="panel">
+            <div className="metric-label">Use of funds – high-level allocation</div>
+            <table className="table" style={{ marginTop: 8 }}>
+              <thead>
+                <tr>
+                  <th>Category</th>
+                  <th>% of round</th>
+                  <th>Amount</th>
+                  <th>Notes</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Founders & Ops</td>
+                  <td>15%</td>
+                  <td>$375k</td>
+                  <td>Founder salaries, basic ops, legal, accounting.</td>
+                </tr>
+                <tr>
+                  <td>Core Engineering</td>
+                  <td>45%</td>
+                  <td>$1.125M</td>
+                  <td>
+                    3–4 senior engineers across identity, policy engine, ledger, connectors.
+                  </td>
+                </tr>
+                <tr>
+                  <td>Design Partners & GTM</td>
+                  <td>20%</td>
+                  <td>$500k</td>
+                  <td>
+                    Travel, POCs, pilots, early sales hire, content & community for CISOs.
+                  </td>
+                </tr>
+                <tr>
+                  <td>Security & Compliance Infra</td>
+                  <td>10%</td>
+                  <td>$250k</td>
+                  <td>
+                    SOC2/ISO prep, pen tests, security tooling, cloud hardening, legal support.
+                  </td>
+                </tr>
+                <tr>
+                  <td>Buffer & Contingency</td>
+                  <td>10%</td>
+                  <td>$250k</td>
+                  <td>Slip in timelines, extra hires, or opportunistic GTM bets.</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <h3 className="subheading" style={{ marginTop: 20 }}>
+            Team shape & hiring sequence
+          </h3>
+          <ul className="list">
+            <li>
+              <strong>Day 0 team:</strong> 2 founders (product/architecture + GTM/enterprise) doing
+              everything: design partner outreach, architecture, early code, and deployment.
+            </li>
+            <li>
+              <strong>Months 0–3:</strong> First 2–3 senior engineers:
+              <ul className="list">
+                <li>Infra/identity/security engineer – non-human PKI, auth, control plane.</li>
+                <li>
+                  Policy/ledger engineer – NL→DSL compiler, rules engine, Merkle tree evidence
+                  store.
+                </li>
+                <li>Integrations engineer – connectors, APIs, webhooks, agent frameworks.</li>
+              </ul>
+            </li>
+            <li>
+              <strong>Months 6–12:</strong> 1–2 additional hires:
+              <ul className="list">
+                <li>Customer engineer / solutions architect for design partners.</li>
+                <li>Part-time or fractional PM / design to refine workflows & UX.</li>
+              </ul>
+            </li>
+            <li>
+              <strong>Months 12–18:</strong> First dedicated GTM hire (AE or sales lead) and
+              customer success lead once 3–5 paying customers exist.
+            </li>
+          </ul>
+        </div>
+
+        <div className="panel">
+          <div className="metric-label">Milestones & PMF path</div>
+          <p style={{ marginTop: 8 }}>
+            Capital is tied directly to milestones. Each tranche of work has a clear “go / adjust /
+            kill” decision.
+          </p>
+
+          <h4 className="subheading" style={{ marginTop: 10 }}>
+            Milestone 1 – 0–6 months: De-risk core platform & land design partners
+          </h4>
+          <ul className="list">
+            <li>Ship v1 of identity, policy, and evidence primitives.</li>
+            <li>
+              1–2 reference connectors (e.g., payments/ledger, CRM, ticketing) in production for
+              real workflows.
+            </li>
+            <li>
+              <strong>Goal:</strong> 1 design partner live, 1 governed workflow, &lt;30 days to
+              first value demonstrated.
+            </li>
+            <li>
+              <strong>PMF signal:</strong> buyer willingness to expand workflows and introduce us to
+              peers / board.
+            </li>
+          </ul>
+
+          <h4 className="subheading" style={{ marginTop: 10 }}>
+            Milestone 2 – 6–12 months: Repeatability & monetization
+          </h4>
+          <ul className="list">
+            <li>3–5 design partners, at least 2 paying production deployments.</li>
+            <li>Common policy templates & playbooks for refunds, PII, access, and credit flows.</li>
+            <li>
+              Basic SOC2 readiness (controls in place, audit started), referenceable security story
+              for CISOs.
+            </li>
+            <li>
+              <strong>Goal:</strong> $300–500k ARR, early net retention from workflow expansion.
+            </li>
+            <li>
+              <strong>PMF signal:</strong> customers ask to bring more systems/agents under
+              governance without heavy selling.
+            </li>
+          </ul>
+
+          <h4 className="subheading" style={{ marginTop: 10 }}>
+            Milestone 3 – 12–24 months: Scale & Series A readiness
+          </h4>
+          <ul className="list">
+            <li>5–8 customers, each $150–200k+ in ARR.</li>
+            <li>Evidence of repeatable implementation motion with partners / SIs.</li>
+            <li>Demonstrated expansion: customers with 3–5+ governed workflows.</li>
+            <li>
+              <strong>Goal:</strong> ~$1M ARR, clear pipeline coverage, and path to $3M+ within
+              18–24 months.
+            </li>
+            <li>
+              <strong>PMF signal:</strong> inbound or pull from CISOs/boards; budget lines created
+              explicitly for AI agent governance.
+            </li>
+          </ul>
+
+          <h4 className="subheading" style={{ marginTop: 10 }}>
+            How we search for PMF in practice
+          </h4>
+          <ul className="list">
+            <li>
+              Start with <strong>“hot pain” workflows</strong> (refunds, credit changes, PII export)
+              where AI is already in production and regulators care.
+            </li>
+            <li>
+              Design partner contracts tied to <strong>explicit outcomes</strong>:
+              <ul className="list">
+                <li>Mean time to detect risky AI actions drops.</li>
+                <li>Regulator/audit questions answered faster with NeuroAudit evidence.</li>
+                <li>
+                  Reduction in manual approvals that still keeps risk within thresholds.
+                </li>
+              </ul>
+            </li>
+            <li>
+              Iterate policy / UX weekly with CISOs and platform teams until workflows are “boring”
+              and trustworthy.
+            </li>
+            <li>
+              Align pricing experiments with value: platform + per-agent + per-workflow bundles,
+              test willingness to pay with every new deployment.
+            </li>
+          </ul>
+
+          <h4 className="subheading" style={{ marginTop: 10 }}>
+            If money were not a problem – GTM acceleration
+          </h4>
+          <p className="muted">
+            We would keep the product scope tight, but accelerate GTM and ecosystem plays:
+          </p>
+          <ul className="list">
+            <li>
+              Hire 1–2 <strong>top-tier enterprise AEs</strong> with existing CISO networks in
+              fintech/FSI.
+            </li>
+            <li>
+              Fund a small <strong>field CTO / evangelist</strong> team to own conference talks,
+              reference architectures, and AI governance roundtables.
+            </li>
+            <li>
+              Co-build <strong>vertical playbooks</strong> with 1–2 major partners (cloud providers,
+              big SIs) and sponsor integrated reference deployments.
+            </li>
+            <li>
+              Invest in <strong>community & content</strong>: CISO working groups, “AI Agent
+              Incidents” post-mortems, and governance benchmarks that NeuroAudit can anchor.
+            </li>
+            <li>
+              Reserve budget for <strong>strategic pilots</strong> in Tier-1 logos (even at lower
+              initial ACV) to build brand and referenceability ahead of Series A.
+            </li>
+          </ul>
+        </div>
+      </div>
+    </SectionFrame>
+  )
+}
+
 function PlaybooksSection() {
   return (
-    <SectionFrame id="playbooks" kicker="08" title="AI governance playbooks – concrete workflows">
+    <SectionFrame id="playbooks" kicker="09" title="AI governance playbooks – concrete workflows">
       <div className="grid-2">
         <div>
           <p>
@@ -943,7 +1167,7 @@ We are exploring a pre-seed/seed round to:
 • Run 3–5 design partner deployments in fintech/insurance
 • Achieve early ARR with strong expansion signals.`
   return (
-    <SectionFrame id="memo" kicker="09" title="Investor memo – narrative summary">
+    <SectionFrame id="memo" kicker="10" title="Investor memo – narrative summary">
       <div className="memo-block">{memoText}</div>
     </SectionFrame>
   )
@@ -951,7 +1175,7 @@ We are exploring a pre-seed/seed round to:
 
 function JeffViewSection() {
   return (
-    <SectionFrame id="jeff-view" kicker="10" title="The Jeff View – Hard Questions & Answers">
+    <SectionFrame id="jeff-view" kicker="11" title="The Jeff View – Hard Questions & Answers">
       <div className="grid-2">
         <div>
           <p>
@@ -1218,7 +1442,7 @@ function JeffDiligenceSection() {
   return (
     <SectionFrame
       id="jeff-diligence"
-      kicker="11"
+      kicker="12"
       title="The Jeff Diligence Framework – Founder–Market–Execution Fit"
     >
       <p>
@@ -1644,7 +1868,7 @@ function JeffDiligenceSection() {
 
 function DeckSection() {
   return (
-    <SectionFrame id="deck" kicker="12" title="Slide deck outline (20 slides)">
+    <SectionFrame id="deck" kicker="13" title="Slide deck outline (20 slides)">
       <div className="grid-2">
         <div>
           <ol className="list">
@@ -1690,7 +1914,7 @@ function DeckSection() {
 
 function ContactSection() {
   return (
-    <SectionFrame id="contact" kicker="13" title="How to use this SPA with investors">
+    <SectionFrame id="contact" kicker="14" title="How to use this SPA with investors">
       <p>
         This site is intentionally built as a single-page React application so you can deploy it to
         Vercel, Netlify, or any static host and share a link with investors, partners, and friends.
