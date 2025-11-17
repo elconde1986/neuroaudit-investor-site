@@ -937,6 +937,85 @@ function JeffViewSection() {
             <li>Explosion of multi-agent architectures acting on real systems, not just chat.</li>
             <li>Boards and regulators asking: “What are your AI agents doing, and how do you prove it?”</li>
           </ul>
+
+          <h3 className="subheading">7. Competitive Landscape – Startups & Vendors</h3>
+          <p>
+            How NeuroAudit sits relative to current AI governance / security players (especially the
+            startups Jeff will ask about):
+          </p>
+          <div className="panel" style={{ marginTop: 8 }}>
+            <div className="metric-label">Competitive matrix (simplified)</div>
+            <table className="table" style={{ marginTop: 6 }}>
+              <thead>
+                <tr>
+                  <th>Company</th>
+                  <th>Focus</th>
+                  <th>How NeuroAudit Differs</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Credo AI</td>
+                  <td>AI governance, risk &amp; compliance; model inventory &amp; oversight.</td>
+                  <td>
+                    Strong on policy &amp; model/vendor governance; less focused on fine-grained,
+                    real-time control of AI agent actions inside business workflows with a
+                    cryptographic evidence ledger.
+                  </td>
+                </tr>
+                <tr>
+                  <td>Zenity</td>
+                  <td>Security for AI agents &amp; SaaS/low-code environments.</td>
+                  <td>
+                    Focuses on agent discovery and security posture. NeuroAudit goes deeper on
+                    per-action policy decisions, approvals, simulation, and auditor-grade evidence
+                    for regulated workflows.
+                  </td>
+                </tr>
+                <tr>
+                  <td>Noma Security</td>
+                  <td>AI agent security &amp; governance; runtime controls and AI asset protection.</td>
+                  <td>
+                    Strong on agent and asset risk; NeuroAudit is framed as the
+                    action-of-record layer: identity → intent → policy → action → evidence, across
+                    heterogeneous workflows.
+                  </td>
+                </tr>
+                <tr>
+                  <td>Securiti AI</td>
+                  <td>AI security &amp; governance, especially data &amp; model risk.</td>
+                  <td>
+                    Excellent data and model governance; NeuroAudit complements this by governing
+                    what agents actually do to systems (refunds, credit changes, PII exports, access)
+                    and proving it for auditors.
+                  </td>
+                </tr>
+                <tr>
+                  <td>Astrix</td>
+                  <td>Non-human / agent identity &amp; least-privilege access.</td>
+                  <td>
+                    Astrix focuses on identity &amp; access for agents (one of our primitives).
+                    NeuroAudit incorporates that primitive but adds policy compilation,
+                    per-action governance, simulation, and a behavioral ledger on top.
+                  </td>
+                </tr>
+                <tr>
+                  <td>Holistic AI</td>
+                  <td>Lifecycle AI governance across models, risk, and compliance.</td>
+                  <td>
+                    Broad AI governance across the lifecycle; NeuroAudit goes narrow and deep on
+                    agent behavior in production systems: real-time policy enforcement, simulations,
+                    and evidence tailored for AI actions.
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+            <p className="muted" style={{ marginTop: 6 }}>
+              TL;DR: most competitors secure prompts, models, networks, or identities. NeuroAudit
+              secures the <em>actions</em> AI agents take in your production systems — tying identity,
+              intent, policy, execution, and evidence into a single control plane.
+            </p>
+          </div>
         </div>
 
         <div className="panel" style={{ maxHeight: '80vh', overflowY: 'auto' }}>
@@ -967,6 +1046,7 @@ function JeffViewSection() {
     </SectionFrame>
   )
 }
+
 
 function DeckSection() {
   return (
