@@ -1,4 +1,14 @@
 import React, { useEffect, useState } from 'react'
+import {
+  Chart as ChartJS,
+  LinearScale,
+  PointElement,
+  Tooltip,
+  Legend,
+  Title as ChartTitle,
+  ScatterController,
+} from 'chart.js'
+import { Scatter } from 'react-chartjs-2'
 
 const sections = [
   { id: 'overview', label: 'Overview' },
@@ -266,6 +276,114 @@ No existing combination of SIEM, identity, logging, firewalls, and manual proces
 That unified behavioral control plane is what justifies introducing NeuroAudit as a foundational layer.`
   }
 ]
+
+ChartJS.register(
+  LinearScale,
+  PointElement,
+  Tooltip,
+  Legend,
+  ChartTitle,
+  ScatterController
+)
+
+function CompetitiveQuadrant() {
+  const data = {
+    datasets: [
+      {
+        label: 'NeuroAudit',
+        data: [{ x: 0.9, y: 0.95 }],
+        backgroundColor: 'rgba(79, 70, 229, 1)',
+        pointRadius: 8,
+      },
+      {
+        label: 'Credo AI',
+        data: [{ x: 0.6, y: 0.4 }],
+        backgroundColor: 'rgba(16, 185, 129, 0.9)',
+        pointRadius: 6,
+      },
+      {
+        label: 'Zenity',
+        data: [{ x: 0.45, y: 0.55 }],
+        backgroundColor: 'rgba(245, 158, 11, 0.9)',
+        pointRadius: 6,
+      },
+      {
+        label: 'Noma Security',
+        data: [{ x: 0.55, y: 0.65 }],
+        backgroundColor: 'rgba(236, 72, 153, 0.9)',
+        pointRadius: 6,
+      },
+      {
+        label: 'Astrix',
+        data: [{ x: 0.35, y: 0.75 }],
+        backgroundColor: 'rgba(59, 130, 246, 0.9)',
+        pointRadius: 6,
+      },
+      {
+        label: 'Holistic AI',
+        data: [{ x: 0.7, y: 0.35 }],
+        backgroundColor: 'rgba(107, 114, 128, 0.9)',
+        pointRadius: 6,
+      },
+    ],
+  }
+
+  const options = {
+    responsive: true,
+    plugins: {
+      legend: {
+        position: 'right',
+      },
+      title: {
+        display: true,
+        text: 'Competitive 2×2 – Depth vs Breadth',
+        font: { size: 14 },
+      },
+      tooltip: {
+        callbacks: {
+          label: (ctx) =>
+            `${ctx.dataset.label} (${ctx.parsed.x.toFixed(2)}, ${ctx.parsed.y.toFixed(2)})`,
+        },
+      },
+    },
+    scales: {
+      x: {
+        min: 0,
+        max: 1,
+        title: {
+          display: true,
+          text: 'Breadth Across AI & Systems →',
+          font: { size: 12 },
+        },
+        grid: { color: 'rgba(148, 163, 184, 0.3)' },
+      },
+      y: {
+        min: 0,
+        max: 1,
+        title: {
+          display: true,
+          text: '↑ Depth of Action Governance',
+          font: { size: 12 },
+        },
+        grid: { color: 'rgba(148, 163, 184, 0.3)' },
+      },
+    },
+  }
+
+  return (
+    <div
+      style={{
+        marginTop: 12,
+        borderRadius: 12,
+        border: '1px solid rgba(148,163,184,0.5)',
+        padding: 12,
+        background: 'rgba(15,23,42,0.02)',
+      }}
+    >
+      <Scatter data={data} options={options} height={260} />
+    </div>
+  )
+}
 
 function scrollToSection(id) {
   const el = document.getElementById(id)
@@ -940,59 +1058,79 @@ function JeffViewSection() {
 
           <h3 className="subheading">7. Competitive Landscape – Startups & Vendors</h3>
           <p>
-            How NeuroAudit sits relative to current AI governance / security players (especially the
-            startups Jeff will ask about):
+            How NeuroAudit sits relative to current AI governance / security players Jeff will ask about:
           </p>
           <div className="panel" style={{ marginTop: 8 }}>
-            <div className="metric-label">Competitive matrix (simplified)</div>
+            <div className="metric-label">Competitive matrix (Stage / Focus)</div>
             <table className="table" style={{ marginTop: 6 }}>
               <thead>
                 <tr>
                   <th>Company</th>
-                  <th>Focus</th>
+                  <th>Stage / Focus</th>
+                  <th>What They Do</th>
                   <th>How NeuroAudit Differs</th>
                 </tr>
               </thead>
               <tbody>
                 <tr>
                   <td>Credo AI</td>
-                  <td>AI governance, risk &amp; compliance; model inventory &amp; oversight.</td>
+                  <td>Growth – AI governance, risk &amp; compliance</td>
                   <td>
-                    Strong on policy &amp; model/vendor governance; less focused on fine-grained,
-                    real-time control of AI agent actions inside business workflows with a
-                    cryptographic evidence ledger.
+                    AI governance &amp; risk platform: model and vendor inventory, risk scoring,
+                    policy catalogs, and documentation for AI initiatives.
+                  </td>
+                  <td>
+                    Strong on model/vendor governance; less focused on fine-grained, real-time
+                    control of AI agent actions inside business workflows with a cryptographic
+                    evidence ledger.
                   </td>
                 </tr>
                 <tr>
                   <td>Zenity</td>
-                  <td>Security for AI agents &amp; SaaS/low-code environments.</td>
+                  <td>Startup – security for AI agents &amp; SaaS/low-code</td>
                   <td>
-                    Focuses on agent discovery and security posture. NeuroAudit goes deeper on
-                    per-action policy decisions, approvals, simulation, and auditor-grade evidence
-                    for regulated workflows.
+                    Discovers AI apps/agents in SaaS &amp; low-code platforms, monitors usage and
+                    misconfigurations, and applies security policies to reduce Shadow AI risk.
+                  </td>
+                  <td>
+                    Focuses on agent and SaaS security posture. NeuroAudit goes deeper on per-action
+                    policy decisions, approvals, simulation, and auditor-grade evidence for
+                    regulated workflows.
                   </td>
                 </tr>
                 <tr>
                   <td>Noma Security</td>
-                  <td>AI agent security &amp; governance; runtime controls and AI asset protection.</td>
+                  <td>Startup – AI agent security &amp; governance</td>
                   <td>
-                    Strong on agent and asset risk; NeuroAudit is framed as the
-                    action-of-record layer: identity → intent → policy → action → evidence, across
+                    Protects AI agents at runtime: risk detection, controls around AI assets, and
+                    security guardrails on agent behavior.
+                  </td>
+                  <td>
+                    Strong on agent and AI asset risk; NeuroAudit positions itself as the
+                    action-of-record layer: identity → intent → policy → action → evidence across
                     heterogeneous workflows.
                   </td>
                 </tr>
                 <tr>
                   <td>Securiti AI</td>
-                  <td>AI security &amp; governance, especially data &amp; model risk.</td>
+                  <td>Growth – AI security &amp; data/model governance</td>
+                  <td>
+                    Data- and model-centric governance: discovery, classification, access control,
+                    and risk management for AI and data pipelines.
+                  </td>
                   <td>
                     Excellent data and model governance; NeuroAudit complements this by governing
-                    what agents actually do to systems (refunds, credit changes, PII exports, access)
-                    and proving it for auditors.
+                    what agents actually do to systems (refunds, credit changes, PII exports,
+                    access) and proving it for auditors and regulators.
                   </td>
                 </tr>
                 <tr>
                   <td>Astrix</td>
-                  <td>Non-human / agent identity &amp; least-privilege access.</td>
+                  <td>Startup – non-human / agent identity &amp; least-privilege</td>
+                  <td>
+                    Identity &amp; access for non-human actors: discovers machine/agent identities,
+                    manages credentials, and enforces least-privilege access.
+                  </td>
                   <td>
                     Astrix focuses on identity &amp; access for agents (one of our primitives).
                     NeuroAudit incorporates that primitive but adds policy compilation,
@@ -1001,7 +1139,11 @@ function JeffViewSection() {
                 </tr>
                 <tr>
                   <td>Holistic AI</td>
-                  <td>Lifecycle AI governance across models, risk, and compliance.</td>
+                  <td>Growth – lifecycle AI governance</td>
+                  <td>
+                    End-to-end AI governance: risk assessment, bias &amp; performance monitoring,
+                    and compliance reporting across the AI lifecycle.
+                  </td>
                   <td>
                     Broad AI governance across the lifecycle; NeuroAudit goes narrow and deep on
                     agent behavior in production systems: real-time policy enforcement, simulations,
@@ -1015,6 +1157,21 @@ function JeffViewSection() {
               secures the <em>actions</em> AI agents take in your production systems — tying identity,
               intent, policy, execution, and evidence into a single control plane.
             </p>
+
+            <div
+              style={{
+                marginTop: 10,
+                paddingTop: 8,
+                borderTop: '1px solid rgba(148, 163, 184, 0.4)',
+                fontSize: 11,
+              }}
+            >
+              <div className="metric-label">2×2 – Where NeuroAudit Sits</div>
+              <p className="muted" style={{ marginBottom: 6 }}>
+                Y-axis: Depth of action governance • X-axis: Breadth across AI &amp; systems
+              </p>
+              <CompetitiveQuadrant />
+            </div>
           </div>
         </div>
 
@@ -1046,7 +1203,6 @@ function JeffViewSection() {
     </SectionFrame>
   )
 }
-
 
 function DeckSection() {
   return (
