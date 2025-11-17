@@ -2,12 +2,11 @@ import React, { useEffect, useState } from 'react'
 import {
   ResponsiveContainer,
   ScatterChart,
-  Scatter,
+  CartesianGrid,
   XAxis,
   YAxis,
-  CartesianGrid,
   Tooltip,
-  Label,
+  Scatter,
 } from 'recharts'
 
 const sections = [
@@ -21,6 +20,7 @@ const sections = [
   { id: 'playbooks', label: 'AI Governance Playbooks' },
   { id: 'memo', label: 'Investor Memo' },
   { id: 'jeff-view', label: 'The Jeff View' },
+  { id: 'jeff-diligence', label: 'Jeff Diligence' },
   { id: 'deck', label: 'Slide Outline' },
   { id: 'contact', label: 'How to Use This' },
 ]
@@ -35,7 +35,7 @@ const jeffFaqs = [
   – Fail-safe (block actions if NeuroAudit is unavailable) for high-risk flows.
   – Fail-open (log-only) for lower-risk or non-critical flows.
 
-This lets CISOs protect critical workflows without introducing unacceptable latency or fragility.`
+This lets CISOs protect critical workflows without introducing unacceptable latency or fragility.`,
   },
   {
     question: '2. Intent Capture Mechanism',
@@ -45,7 +45,7 @@ This lets CISOs protect critical workflows without introducing unacceptable late
 • Legacy / opaque agents: proxy observers and structured parsing infer intent from outputs and API calls even if we don’t control source code.
 • Multi-step / planning agents: we model intent as a sequence and link each step in the reasoning and execution chain.
 
-We don’t need to read model internals — we govern behavior at the action level with rich contextual metadata.`
+We don’t need to read model internals — we govern behavior at the action level with rich contextual metadata.`,
   },
   {
     question: '3. Brownfield Reality',
@@ -57,7 +57,7 @@ Integration patterns:
 • API gateways / proxies for SaaS AI tools where we can observe and govern flows via APIs/webhooks.
 • Low-code connectors into CRMs, ticketing, payments, and core systems.
 
-The “14 hours per connector” estimate is incremental once base plumbing and patterns exist, not a promise to instrument an entire estate from scratch in that time.`
+The “14 hours per connector” estimate is incremental once base plumbing and patterns exist, not a promise to instrument an entire estate from scratch in that time.`,
   },
   {
     question: '4. Meta-Governance Problem',
@@ -68,7 +68,7 @@ The “14 hours per connector” estimate is incremental once base plumbing and 
 • Full self-audit: every administrative action is logged and evidence-chained.
 • Customers can run NeuroAudit in a dedicated, private environment to minimize blast radius.
 
-If an attacker targets NeuroAudit, they face a hardened surface, signed configs, and complete audit trails — which is far better than bespoke, scattered governance logic.`
+If an attacker targets NeuroAudit, they face a hardened surface, signed configs, and complete audit trails — which is far better than bespoke, scattered governance logic.`,
   },
   {
     question: '5. Cryptographic Identity for Agents',
@@ -78,7 +78,7 @@ If an attacker targets NeuroAudit, they face a hardened surface, signed configs,
 • Identity lifecycle (issue, rotate, revoke) is programmatic and integrated into orchestration flows.
 • Downstream systems expect NeuroAudit-verified identities, reducing impersonation risk.
 
-We move away from untracked service accounts and static API keys toward time-bounded, traceable non-human identities.`
+We move away from untracked service accounts and static API keys toward time-bounded, traceable non-human identities.`,
   },
   {
     question: '6. Evidence Immutability',
@@ -90,7 +90,7 @@ We move away from untracked service accounts and static API keys toward time-bou
   – Logs can be exported to your archival / legal systems.
   – Storage can be pinned to specific jurisdictions to satisfy residency constraints.
 
-Regulators, auditors, or legal teams can verify that the evidence has not been altered.`
+Regulators, auditors, or legal teams can verify that the evidence has not been altered.`,
   },
   {
     question: '7. Policy Configuration Burden',
@@ -101,7 +101,7 @@ Regulators, auditors, or legal teams can verify that the evidence has not been a
 • Simulation runs policies against historical actions to expose conflicts and excessive false positives before enforcement.
 • Policy ownership typically sits with security / risk teams, in partnership with AI platform teams.
 
-Net effect: less configuration from scratch, fewer surprises in production, clearer accountability.`
+Net effect: less configuration from scratch, fewer surprises in production, clearer accountability.`,
   },
   {
     question: '8. Agent vs Workflow Confusion (Concept & Pricing)',
@@ -115,7 +115,7 @@ Governance attaches primarily to workflows, because that’s where business risk
 • Long-lived named agents billed individually.
 • Ephemeral agent swarms billed via aggregate utilization rather than per-instance.
 
-This keeps pricing predictable and aligned with business value, even when architectures are highly dynamic.`
+This keeps pricing predictable and aligned with business value, even when architectures are highly dynamic.`,
   },
   {
     question: '9. Simulation Engine Reliability',
@@ -125,7 +125,7 @@ This keeps pricing predictable and aligned with business value, even when archit
 • We do not re-sample model outputs — we use real historical actions and decisions.
 • Drift detection looks at changing distributions (denies, escalations, risky actions) over time.
 
-This approach avoids “random” simulations and focuses on policy correctness and drift, not pseudo-reproducing AI randomness.`
+This approach avoids “random” simulations and focuses on policy correctness and drift, not pseudo-reproducing AI randomness.`,
   },
   {
     question: '10. SIEM Integration vs Replacement',
@@ -135,7 +135,7 @@ This approach avoids “random” simulations and focuses on policy correctness 
 • SOC analysts continue working inside their existing SIEM console.
 • SOAR tools can trigger incident response and automation based on NeuroAudit signals.
 
-We reduce operational fragmentation by feeding richer AI context into systems teams already use, instead of trying to replace them.`
+We reduce operational fragmentation by feeding richer AI context into systems teams already use, instead of trying to replace them.`,
   },
   {
     question: '11. AI Firewall Differentiation',
@@ -150,7 +150,7 @@ NeuroAudit operates at the **action** layer:
 • Is model- and vendor-agnostic.
 • Produces a behavioral ledger with policy traces and evidence.
 
-Even as firewalls “move downstream,” they are not built as unified behavioral governance platforms with identity, policy, simulation, and evidence in one place.`
+Even as firewalls “move downstream,” they are not built as unified behavioral governance platforms with identity, policy, simulation, and evidence in one place.`,
   },
   {
     question: '12. Identity Platform Extension',
@@ -163,7 +163,7 @@ We integrate with identity platforms:
 • They manage access to systems.
 • We govern behavior across those systems over time, with policy and proof.
 
-The two are complementary, not substitutes.`
+The two are complementary, not substitutes.`,
   },
   {
     question: '13. AI Act Ambiguity',
@@ -179,7 +179,7 @@ NeuroAudit’s compliance packs map capabilities to concrete obligations (e.g., 
 • Risk / control workflows.
 • Oversight and escalation.
 
-We are explicit: we support compliance with strong technical controls, but we are not a “magic compliance stamp.”`
+We are explicit: we support compliance with strong technical controls, but we are not a “magic compliance stamp.”`,
   },
   {
     question: '14. SOC2 AI Addendum',
@@ -190,7 +190,7 @@ Our design principles:
 • Align with core SOC2 themes (change management, logging, access control, segregation of duties) applied to AI workflows.
 • Ensure our evidence model is flexible enough to map into whichever formal frameworks get standardized.
 
-We do not invent proprietary “standards”; we make it easier for auditors to map NeuroAudit evidence to their control catalogs.`
+We do not invent proprietary “standards”; we make it easier for auditors to map NeuroAudit evidence to their control catalogs.`,
   },
   {
     question: '15. Evidence in Legal/Regulatory Context',
@@ -200,7 +200,7 @@ We do not invent proprietary “standards”; we make it easier for auditors to 
 • Exportable into e-discovery and legal archiving tooling.
 • Access and changes to evidence are themselves logged.
 
-We work with counsel and customer legal teams to ensure that log structure and chain-of-custody practices align with admissibility expectations, even though admissibility is always case- and jurisdiction-specific.`
+We work with counsel and customer legal teams to ensure that log structure and chain-of-custody practices align with admissibility expectations, even though admissibility is always case- and jurisdiction-specific.`,
   },
   {
     question: '16. Services Revenue Trap',
@@ -214,7 +214,7 @@ To avoid becoming a consulting company:
 • Partners (GRC firms, system integrators) take on more of the services load over time.
 • Net-new workflow and customer deployments get progressively lighter.
 
-By customer #10–#20, revenue mix tilts toward platform ARR with decreasing marginal services.`
+By customer #10–#20, revenue mix tilts toward platform ARR with decreasing marginal services.`,
   },
   {
     question: '17. Expansion Assumption',
@@ -225,9 +225,9 @@ By customer #10–#20, revenue mix tilts toward platform ARR with decreasing mar
 NeuroAudit exploits that:
 
 • Schemas and evidence models are reused across workflows.
-                        • Only policy thresholds and context-specific conditions need tuning.
+• Only policy thresholds and context-specific conditions need tuning.
 
-That is why expansion is not “rebuild everything per workflow,” but incremental configuration on top of a shared platform.`
+That is why expansion is not “rebuild everything per workflow,” but incremental configuration on top of a shared platform.`,
   },
   {
     question: '18. Channel Complexity',
@@ -236,7 +236,7 @@ That is why expansion is not “rebuild everything per workflow,” but incremen
 • Partners receive attractive license and services margins, but not so high that they’re incented to re-build us.
 • Core IP — behavioral ledger, policy compiler, simulation engine, non-human PKI — is technically deep and non-trivial.
 
-We support partners with training, certification, and co-sell motions. They make money delivering NeuroAudit, not reinventing it.`
+We support partners with training, certification, and co-sell motions. They make money delivering NeuroAudit, not reinventing it.`,
   },
   {
     question: '19. Platform Dependency Risk',
@@ -247,7 +247,7 @@ We support partners with training, certification, and co-sell motions. They make
 • Self-hosted or private-cloud deployment options for critical customers.
 • Clear export paths for all data and configuration.
 
-We are foundational — but not a black box or a one-way door.`
+We are foundational — but not a black box or a one-way door.`,
   },
   {
     question: '20. Acquisition Value vs Build',
@@ -259,7 +259,7 @@ We are foundational — but not a black box or a one-way door.`
 Our long-term value is not “we were first,” but:
 • Deep integration with AI workflows.
 • A defensible behavioral ledger + policy + simulation stack.
-• Embeddedness in regulated customer environments.`
+• Embeddedness in regulated customer environments.`,
   },
   {
     question: '21. The Synthesis Question – Irreducible Core',
@@ -273,21 +273,19 @@ No existing combination of SIEM, identity, logging, firewalls, and manual proces
 • Lets you simulate and test policies across all that behavior.
 • Does so in a vendor-neutral way across multiple AI and systems stacks.
 
-That unified behavioral control plane is what justifies introducing NeuroAudit as a foundational layer.`
-  }
+That unified behavioral control plane is what justifies introducing NeuroAudit as a foundational layer.`,
+  },
 ]
 
+// 2x2 positions with per-company colors
 const competitionPositions = [
-  // NeuroAudit – keep this as the hero (purple)
   { name: 'NeuroAudit', x: 9, y: 9, isNeuro: true },
-
-  // Competitors – each with its own color
   {
     name: 'Astrix',
     x: 3,
     y: 8,
     isNeuro: false,
-    color: '#f97316',      // orange
+    color: '#f97316',
     stroke: '#c2410c',
   },
   {
@@ -295,7 +293,7 @@ const competitionPositions = [
     x: 4,
     y: 7,
     isNeuro: false,
-    color: '#10b981',      // emerald
+    color: '#10b981',
     stroke: '#047857',
   },
   {
@@ -303,7 +301,7 @@ const competitionPositions = [
     x: 5,
     y: 6,
     isNeuro: false,
-    color: '#0ea5e9',      // sky
+    color: '#0ea5e9',
     stroke: '#0369a1',
   },
   {
@@ -311,7 +309,7 @@ const competitionPositions = [
     x: 7,
     y: 5,
     isNeuro: false,
-    color: '#e11d48',      // rose
+    color: '#e11d48',
     stroke: '#9f1239',
   },
   {
@@ -319,7 +317,7 @@ const competitionPositions = [
     x: 7,
     y: 4,
     isNeuro: false,
-    color: '#22c55e',      // green
+    color: '#22c55e',
     stroke: '#15803d',
   },
   {
@@ -327,12 +325,27 @@ const competitionPositions = [
     x: 8,
     y: 4,
     isNeuro: false,
-    color: '#a855f7',      // violet
+    color: '#a855f7',
     stroke: '#7e22ce',
   },
 ]
 
+const renderScatterPoint = (props) => {
+  const { cx, cy, payload } = props
+  const isNeuro = payload?.isNeuro
 
+  const fill = isNeuro ? '#4f46e5' : payload?.color || '#9ca3af'
+  const stroke = isNeuro ? '#312e81' : payload?.stroke || '#6b7280'
+
+  return (
+    <g>
+      <circle cx={cx} cy={cy} r={6} fill={fill} stroke={stroke} strokeWidth={1.5} />
+      <text x={cx + 8} y={cy - 6} fontSize={10} fill="#0f172a">
+        {payload?.name}
+      </text>
+    </g>
+  )
+}
 
 function scrollToSection(id) {
   const el = document.getElementById(id)
@@ -346,6 +359,7 @@ function scrollToSection(id) {
 export default function App() {
   const [active, setActive] = useState('overview')
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
+  const [jeffMode, setJeffMode] = useState(false)
 
   useEffect(() => {
     const handler = () => {
@@ -373,6 +387,10 @@ export default function App() {
     setMobileMenuOpen(false)
   }
 
+  const visibleSections = jeffMode
+    ? sections.filter((s) => s.id === 'jeff-view' || s.id === 'jeff-diligence')
+    : sections
+
   return (
     <div className="app-root">
       <div className="app-shell">
@@ -389,12 +407,33 @@ export default function App() {
           <div className="sidebar-header">
             <div>
               <div className="logo">NeuroAudit</div>
-              <div className="logo-tagline">AI agent security, governance &amp; audit</div>
+              <div className="logo-tagline">AI agent security, governance & audit</div>
             </div>
           </div>
+
+          <div className="jeff-toggle">
+            <div className="jeff-toggle-label">
+              <span className="badge badge-soft">Jeff Mode</span>
+              <span className="muted" style={{ fontSize: 11, marginLeft: 6 }}>
+                Show only Jeff-centric views
+              </span>
+            </div>
+            <button
+              type="button"
+              className={`toggle-switch ${jeffMode ? 'on' : 'off'}`}
+              onClick={() => {
+                const next = !jeffMode
+                setJeffMode(next)
+                if (next) scrollToSection('jeff-view')
+              }}
+            >
+              <span className="toggle-knob" />
+            </button>
+          </div>
+
           <nav className="nav">
             <div className="nav-section-label">INVESTOR BRIEF</div>
-            {sections.map((s) => (
+            {visibleSections.map((s) => (
               <button
                 key={s.id}
                 className={['nav-btn', active === s.id ? 'active' : ''].join(' ')}
@@ -424,6 +463,7 @@ export default function App() {
           <PlaybooksSection />
           <MemoSection />
           <JeffViewSection />
+          <JeffDiligenceSection />
           <DeckSection />
           <ContactSection />
         </main>
@@ -437,13 +477,14 @@ function Hero() {
     <section>
       <div className="hero-tag">
         <span className="hero-tag-dot" />
-        AI security &amp; governance for the agent era
+        AI security & governance for the agent era
       </div>
       <div className="hero-title">The control plane for AI agents in regulated industries.</div>
       <div className="hero-subtitle">
         NeuroAudit gives enterprises a single place to monitor, govern, and audit every AI-driven
         action across their stack – before regulators, customers, or attackers do. For a hard-nosed,
-        operator view of the business, see <strong>The Jeff View</strong> below.
+        operator view of the business, see <strong>The Jeff View</strong> below or flip on{' '}
+        <strong>Jeff Mode</strong> in the sidebar.
       </div>
       <div className="hero-cta-row">
         <button className="btn btn-primary" onClick={() => scrollToSection('jeff-view')}>
@@ -499,7 +540,7 @@ function OverviewSection() {
           <div className="panel">
             <div className="metric-label">Initial target customers</div>
             <div className="metric-value">Fintech, Banks, Insurers</div>
-            <div className="metric-caption">Where AI is live &amp; regulators are watching.</div>
+            <div className="metric-caption">Where AI is live & regulators are watching.</div>
           </div>
           <div className="panel">
             <div className="metric-label">Business model</div>
@@ -558,7 +599,7 @@ function ProblemSection() {
 
 function SolutionSection() {
   return (
-    <SectionFrame id="solution" kicker="03" title="Solution &amp; product – The AI agent control plane">
+    <SectionFrame id="solution" kicker="03" title="Solution & product – The AI agent control plane">
       <div className="grid-2">
         <div>
           <p>NeuroAudit is a control plane that sits between AI agents and the systems they act on.</p>
@@ -655,7 +696,7 @@ function BusinessModelSection() {
 
 function MarketSection() {
   return (
-    <SectionFrame id="market" kicker="05" title="Market &amp; competition">
+    <SectionFrame id="market" kicker="05" title="Market & competition">
       <div className="grid-2">
         <div>
           <p>
@@ -671,8 +712,8 @@ function MarketSection() {
               <strong>SAM:</strong> ~$8B focused on enterprises with live AI agents.
             </li>
             <li>
-              <strong>SOM:</strong> ~$0.5B reachable in fintech, banking, insurance, and
-              SaaS in the next 3–5 years.
+              <strong>SOM:</strong> ~$0.5B reachable in fintech, banking, insurance, and SaaS in the
+              next 3–5 years.
             </li>
           </ul>
         </div>
@@ -722,8 +763,8 @@ function GtmSection() {
               workflows. Integrate with 1–2 critical systems (payments, card core, CRM).
             </li>
             <li>
-              <strong>Phase 2 – mid-market &amp; enterprise sales:</strong> direct outreach to CISOs,
-              Chief Risk Officers, and Heads of AI/ML &amp; Platform Engineering.
+              <strong>Phase 2 – mid-market & enterprise sales:</strong> direct outreach to CISOs,
+              Chief Risk Officers, and Heads of AI/ML & Platform Engineering.
             </li>
             <li>
               <strong>Phase 3 – partner ecosystem:</strong> consulting firms, cloud providers, and
@@ -797,8 +838,8 @@ function FinancialsSection() {
           <ul className="list">
             <li>High gross margins by avoiding heavy inference compute.</li>
             <li>
-              Net dollar retention driven by adding workflows, agents, environments, and
-              compliance modules.
+              Net dollar retention driven by adding workflows, agents, environments, and compliance
+              modules.
             </li>
             <li>Sales efficiency targeted via partner-led deals and short proofs of value.</li>
             <li>
@@ -834,7 +875,7 @@ function PlaybooksSection() {
               review; log and explain all adverse actions.”
             </li>
             <li>
-              <strong>Access &amp; permissions:</strong> “Temporary access grants must expire and be
+              <strong>Access & permissions:</strong> “Temporary access grants must expire and be
               tied to explicit approvals.”
             </li>
           </ul>
@@ -908,52 +949,15 @@ We are exploring a pre-seed/seed round to:
   )
 }
 
-const renderScatterPoint = (props) => {
-  const { cx, cy, payload } = props
-  const isNeuro = payload?.isNeuro
-
-  const fill = isNeuro
-    ? '#4f46e5' // NeuroAudit – indigo
-    : payload?.color || '#9ca3af' // fallback gray if no color
-
-  const stroke = isNeuro
-    ? '#312e81'
-    : payload?.stroke || '#6b7280'
-
-  return (
-    <g>
-      <circle
-        cx={cx}
-        cy={cy}
-        r={6}
-        fill={fill}
-        stroke={stroke}
-        strokeWidth={1.5}
-      />
-      <text
-        x={cx + 8}
-        y={cy - 6}
-        fontSize={10}
-        fill="#0f172a"
-      >
-        {payload?.name}
-      </text>
-    </g>
-  )
-}
-
-
-
 function JeffViewSection() {
   return (
-    <SectionFrame id="jeff-view" kicker="10" title="The Jeff View – Hard Questions &amp; Answers">
+    <SectionFrame id="jeff-view" kicker="10" title="The Jeff View – Hard Questions & Answers">
       <div className="grid-2">
         <div>
           <p>
             This section structures the NeuroAudit plan the way Jeff likes to evaluate companies:
             clear platform definition, buyer clarity, build-vs-buy reality, competitive moat,
-            timing, a full CISO due-diligence Q&amp;A, and a concrete plan for how seed money,
-            milestones, PMF, team, and GTM fit together.
+            timing, and a full CISO due-diligence Q&amp;A.
           </p>
 
           <h3 className="subheading">1. App or Platform?</h3>
@@ -965,21 +969,40 @@ function JeffViewSection() {
             NeuroAudit is a platform defined by five primitives reused across every deployment:
           </p>
           <ul className="list">
-            <li><strong>Identity</strong> – cryptographic identities for non-human agents.</li>
-            <li><strong>Intent</strong> – structured capture/inference of what an agent is trying to do.</li>
-            <li><strong>Policy</strong> – natural-language rules compiled to a deterministic DSL.</li>
-            <li><strong>Action</strong> – inline governance of system-level actions (refunds, credit, PII, access).</li>
-            <li><strong>Evidence</strong> – append-only, verifiable behavioral ledger for regulators and auditors.</li>
+            <li>
+              <strong>Identity</strong> – cryptographic identities for non-human agents.
+            </li>
+            <li>
+              <strong>Intent</strong> – structured capture/inference of what an agent is trying to
+              do.
+            </li>
+            <li>
+              <strong>Policy</strong> – natural-language rules compiled to a deterministic DSL.
+            </li>
+            <li>
+              <strong>Action</strong> – inline governance of system-level actions (refunds, credit,
+              PII, access).
+            </li>
+            <li>
+              <strong>Evidence</strong> – append-only, verifiable behavioral ledger for regulators
+              and auditors.
+            </li>
           </ul>
 
           <h3 className="subheading">2. Who Actually Buys?</h3>
-          <p>
-            The buyer stack is explicit:
-          </p>
+          <p>The buyer stack is explicit:</p>
           <ul className="list">
-            <li><strong>CISO</strong> – primary economic buyer; owns AI risk and security posture.</li>
-            <li><strong>Head of AI / Platform Engineering</strong> – technical champion and implementer.</li>
-            <li><strong>CRO / Compliance</strong> – economic influencer focused on evidence &amp; controls.</li>
+            <li>
+              <strong>CISO</strong> – primary economic buyer; owns AI risk and security posture.
+            </li>
+            <li>
+              <strong>Head of AI / Platform Engineering</strong> – technical champion and
+              implementer.
+            </li>
+            <li>
+              <strong>CRO / Compliance</strong> – economic influencer focused on evidence &amp;
+              controls.
+            </li>
           </ul>
 
           <h3 className="subheading">3. How Do They Solve It Today?</h3>
@@ -988,19 +1011,25 @@ function JeffViewSection() {
             Slack approvals, and CSV exports. These are:
           </p>
           <ul className="list">
-            <li><strong>Incomplete</strong> – no unified view of AI behavior across workflows.</li>
-            <li><strong>Unverifiable</strong> – no cryptographic integrity or chain-of-custody.</li>
-            <li><strong>Non-deterministic</strong> – policies exist in docs, not in code.</li>
-            <li><strong>Non-compliant</strong> – difficult to defend under AI Act / SOC2 / ISO 42001.</li>
+            <li>
+              <strong>Incomplete</strong> – no unified view of AI behavior across workflows.
+            </li>
+            <li>
+              <strong>Unverifiable</strong> – no cryptographic integrity or chain-of-custody.
+            </li>
+            <li>
+              <strong>Non-deterministic</strong> – policies exist in docs, not in code.
+            </li>
+            <li>
+              <strong>Non-compliant</strong> – difficult to defend under AI Act / SOC2 / ISO 42001.
+            </li>
           </ul>
 
           <h3 className="subheading">4. Build vs Buy – Can They Just Build It?</h3>
           <p>
             Jeff’s CFO lens: “If I can build this cheaper internally, your deal dies.”
           </p>
-          <p>
-            To replicate NeuroAudit, an enterprise must build:
-          </p>
+          <p>To replicate NeuroAudit, an enterprise must build:</p>
           <ul className="list">
             <li>Non-human identity / PKI and lifecycle management for agents.</li>
             <li>Intent capture and normalization across multiple agent frameworks.</li>
@@ -1010,17 +1039,17 @@ function JeffViewSection() {
             <li>A simulation and drift detection engine tuned for agent behavior.</li>
           </ul>
           <p>
-            Realistic cost: <strong>6–10 engineers × 12–18 months = $3.6M–$6.2M</strong> plus ongoing maintenance.
-            NeuroAudit typically lands at <strong>$180K–$480K/year</strong> for a serious deployment.
+            Realistic cost: <strong>6–10 engineers × 12–18 months = $3.6M–$6.2M</strong> plus
+            ongoing maintenance. NeuroAudit typically lands at{' '}
+            <strong>$180K–$480K/year</strong> for a serious deployment.
           </p>
 
           <h3 className="subheading">5. Why Won’t Big Vendors Crush This?</h3>
           <p>
-            Jeff&apos;s competitive question: “Why wouldn&apos;t Microsoft, Google, or Palo Alto just ship this?”
+            Jeff&apos;s competitive question: “Why wouldn&apos;t Microsoft, Google, or Palo Alto just ship
+            this?”
           </p>
-          <p>
-            Our moat is depth + neutrality:
-          </p>
+          <p>Our moat is depth + neutrality:</p>
           <ul className="list">
             <li>Neutral across OpenAI, Anthropic, local models, custom agents, SaaS AI.</li>
             <li>Behavioral ledger purpose-built for AI actions, not generic logs.</li>
@@ -1031,20 +1060,22 @@ function JeffViewSection() {
           </ul>
 
           <h3 className="subheading">6. Why Now?</h3>
-          <p>
-            Timing is driven by regulation and real incidents:
-          </p>
+          <p>Timing is driven by regulation and real incidents:</p>
           <ul className="list">
             <li>EU AI Act enforcement windows arriving for high-risk systems.</li>
             <li>Emerging SOC2 AI and ISO/IEC 42001 frameworks.</li>
             <li>AI-caused financial, data, and reputational incidents appearing in the wild.</li>
             <li>Explosion of multi-agent architectures acting on real systems, not just chat.</li>
-            <li>Boards and regulators asking: “What are your AI agents doing, and how do you prove it?”</li>
+            <li>
+              Boards and regulators asking: “What are your AI agents doing, and how do you prove
+              it?”
+            </li>
           </ul>
 
-          <h3 className="subheading">7. Competitive Landscape – Startups &amp; Vendors</h3>
+          <h3 className="subheading">7. Competitive Landscape – Startups & Vendors</h3>
           <p>
-            How NeuroAudit sits relative to current AI governance / security players Jeff will ask about:
+            How NeuroAudit sits relative to current AI governance / security players Jeff will ask
+            about:
           </p>
           <div className="panel" style={{ marginTop: 8 }}>
             <div className="metric-label">Competitive matrix (Stage / Focus)</div>
@@ -1070,9 +1101,9 @@ function JeffViewSection() {
                   <td>Zenity</td>
                   <td>Startup – security for AI agents &amp; SaaS/low-code environments.</td>
                   <td>
-                    Focuses on agent and SaaS security posture. NeuroAudit goes deeper on
-                    per-action policy decisions, approvals, simulation, and auditor-grade evidence
-                    for regulated workflows.
+                    Focuses on agent and SaaS security posture. NeuroAudit goes deeper on per-action
+                    policy decisions, approvals, simulation, and auditor-grade evidence for
+                    regulated workflows.
                   </td>
                 </tr>
                 <tr>
@@ -1089,8 +1120,8 @@ function JeffViewSection() {
                   <td>Growth – AI security &amp; data/model governance.</td>
                   <td>
                     Excellent data and model governance; NeuroAudit complements this by governing
-                    what agents actually do to systems (refunds, credit changes, PII exports, access)
-                    and proving it for auditors and regulators.
+                    what agents actually do to systems (refunds, credit changes, PII exports,
+                    access) and proving it for auditors and regulators.
                   </td>
                 </tr>
                 <tr>
@@ -1115,11 +1146,10 @@ function JeffViewSection() {
             </table>
             <p className="muted" style={{ marginTop: 6 }}>
               TL;DR: most competitors secure prompts, models, networks, or identities. NeuroAudit
-              secures the <em>actions</em> AI agents take in your production systems — tying identity,
-              intent, policy, execution, and evidence into a single control plane.
+              secures the <em>actions</em> AI agents take in your production systems — tying
+              identity, intent, policy, execution, and evidence into a single control plane.
             </p>
 
-            {/* Real 2×2 scatter chart using Recharts */}
             <div
               style={{
                 marginTop: 10,
@@ -1134,211 +1164,33 @@ function JeffViewSection() {
               </p>
               <div style={{ width: '100%', height: 220 }}>
                 <ResponsiveContainer>
-                  <ScatterChart margin={{ top: 10, right: 10, bottom: 20, left: 10 }}>
+                  <ScatterChart margin={{ top: 10, right: 10, left: -20, bottom: 20 }}>
                     <CartesianGrid strokeDasharray="3 3" />
                     <XAxis
                       type="number"
                       dataKey="x"
                       name="Breadth"
+                      tickLine={false}
+                      axisLine={false}
                       domain={[0, 10]}
-                      tickCount={6}
-                    >
-                      <Label value="Breadth across AI & systems" position="bottom" style={{ fontSize: 11 }} />
-                    </XAxis>
+                      tick={{ fontSize: 10 }}
+                    />
                     <YAxis
                       type="number"
                       dataKey="y"
                       name="Depth"
+                      tickLine={false}
+                      axisLine={false}
                       domain={[0, 10]}
-                      tickCount={6}
-                    >
-                      <Label
-                        value="Depth of action governance"
-                        angle={-90}
-                        position="insideLeft"
-                        style={{ textAnchor: 'middle', fontSize: 11 }}
-                      />
-                    </YAxis>
-                    <Tooltip
-                      cursor={{ strokeDasharray: '3 3' }}
-                      formatter={(_, __, item) => item && item.payload && item.payload.name}
-                      labelFormatter={() => ''}
+                      tick={{ fontSize: 10 }}
                     />
-                    <Scatter
-  data={competitionPositions}
-  name="Vendors"
-  shape={renderScatterPoint}
-/>
-
-
+                    <Tooltip cursor={{ strokeDasharray: '3 3' }} />
+                    <Scatter data={competitionPositions} name="Vendors" shape={renderScatterPoint} />
                   </ScatterChart>
                 </ResponsiveContainer>
               </div>
-              <ul className="list" style={{ marginTop: 6 }}>
-                <li><strong>Top-right:</strong> NeuroAudit – deep action governance, broad across stacks.</li>
-                <li><strong>Top-left:</strong> Deep but narrow (e.g., Astrix on identity).</li>
-                <li><strong>Bottom-right:</strong> Broad but shallow (suites that touch many surfaces but not deeply at action level).</li>
-                <li><strong>Bottom-left:</strong> Early or point tools – shallow &amp; narrow.</li>
-              </ul>
             </div>
           </div>
-
-          {/* 8. Seed Round Use of Funds & Milestones */}
-          <h3 className="subheading" style={{ marginTop: 24 }}>8. Seed Round Use of Funds &amp; Milestones</h3>
-          <p>
-            Jeff wants to see every dollar tied directly to milestones. Assuming a{' '}
-            <strong>$2.5M seed round</strong>, the use of funds looks like:
-          </p>
-          <table className="table">
-            <thead>
-              <tr>
-                <th>Category</th>
-                <th>%</th>
-                <th>$ Amount</th>
-                <th>Purpose</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td>Engineering</td>
-                <td>45%</td>
-                <td>~$1.125M</td>
-                <td>Core platform: identity, intent ingestion, policy engine, ledger, connectors</td>
-              </tr>
-              <tr>
-                <td>Founder Salaries + Ops</td>
-                <td>15%</td>
-                <td>~$375K</td>
-                <td>Minimal salaries, legal, admin, compliance</td>
-              </tr>
-              <tr>
-                <td>Design Partner Deployments</td>
-                <td>10%</td>
-                <td>~$250K</td>
-                <td>Onsite integration, workflows, connectors, feedback loops</td>
-              </tr>
-              <tr>
-                <td>Compliance &amp; Security</td>
-                <td>5%</td>
-                <td>~$125K</td>
-                <td>Pen tests, SOC2 readiness, audits, infra hardening</td>
-              </tr>
-              <tr>
-                <td>GTM / Early Sales</td>
-                <td>15%</td>
-                <td>~$375K</td>
-                <td>AE, fractional CISO advisor, marketing &amp; sales assets</td>
-              </tr>
-              <tr>
-                <td>Cloud / Infra</td>
-                <td>5%</td>
-                <td>~$125K</td>
-                <td>Simulation, event ingestion, staging &amp; testing environments</td>
-              </tr>
-              <tr>
-                <td>Contingency</td>
-                <td>5%</td>
-                <td>~$125K</td>
-                <td>Runway buffer / risk cushion</td>
-              </tr>
-            </tbody>
-          </table>
-
-          <p><strong>Milestones:</strong></p>
-          <ul className="list">
-            <li>
-              <strong>Milestone 1 (0–6 months) – Platform Core MVP:</strong> identity, intent ingestors, policy engine v1, evidence ledger, console v1.  
-              <br />✅ 1 design partner live, 1 governed workflow, &lt; 30 days to first value.
-            </li>
-            <li>
-              <strong>Milestone 2 (6–12 months) – Workflow Depth + Integrations:</strong> 10+ connectors, simulation v1, audit exports, SSO &amp; RBAC.  
-              <br />✅ 3–5 design partners, first paying customer, increasing workflow coverage.
-            </li>
-            <li>
-              <strong>Milestone 3 (12–24 months) – Commercial Readiness:</strong> connector marketplace, drift detection, partner playbooks.  
-              <br />✅ $1M+ ARR, repeatable deployments, growing enterprise pipeline.
-            </li>
-          </ul>
-
-          {/* 9. Product-Market Fit Strategy */}
-          <h3 className="subheading">9. How We Find Product-Market Fit</h3>
-          <p>
-            Jeff cares about a disciplined PMF search, not vibes. The PMF strategy is explicit:
-          </p>
-          <ul className="list">
-            <li>
-              <strong>Start with “hot pain”:</strong> workflows where AI is already acting on money,
-              PII, customers, or production systems — and where CISOs already feel audit and board pressure.
-            </li>
-            <li>
-              <strong>Wedge use cases:</strong> one workflow per customer (refund guardrails, PII exports,
-              credit limit changes, HR access) that we can govern in &lt; 30 days.
-            </li>
-            <li>
-              <strong>Design partner loop:</strong> map the workflow → govern it → prove value →
-              expand → convert to paid → capture logos and references.
-            </li>
-          </ul>
-          <p><strong>PMF metrics Jeff will like:</strong></p>
-          <ul className="list">
-            <li>50+ governed agent actions per day per customer.</li>
-            <li>Workflows per customer expanding quarter over quarter.</li>
-            <li>CISOs explicitly referencing NeuroAudit in AI risk / board decks.</li>
-            <li>Willingness-to-pay in the $100–$150/agent range for high-risk workflows.</li>
-          </ul>
-
-          {/* 10. Team Shape */}
-          <h3 className="subheading">10. Team – Seed &amp; Post-Seed Shape</h3>
-          <p>
-            Instead of a bloated org chart, Jeff wants to see a lean, execution-focused team.
-          </p>
-          <p><strong>Seed team (0–12 months, 6–8 people):</strong></p>
-          <ul className="list">
-            <li>2–3 founders – architecture, customer integration, product direction.</li>
-            <li>2 backend engineers – policy engine, ledger, simulation core.</li>
-            <li>1 integrations engineer – connectors into CRM, ticketing, payments, PII systems.</li>
-            <li>1 fullstack engineer – console UI, timelines, approvals, visualizations.</li>
-            <li>Fractional CISO – narrative, credibility, security reviews.</li>
-            <li>1 PM / chief-of-staff type – prioritization, customer feedback loops.</li>
-            <li>1 AE – added only once 2–3 design partners are live.</li>
-          </ul>
-          <p><strong>Post-seed (12–24 months, 10–14 people):</strong></p>
-          <ul className="list">
-            <li>Additional integrations &amp; simulation engineers.</li>
-            <li>Compliance specialist to harden AI Act / SOC2 / ISO mappings.</li>
-            <li>Partner manager for GRC firms and integrators.</li>
-            <li>Sales engineer to support complex POCs.</li>
-          </ul>
-
-          {/* 11. If Capital Were Not a Constraint */}
-          <h3 className="subheading">11. If Money Were Not a Constraint – GTM Acceleration</h3>
-          <p>
-            Jeff&apos;s “what if capital isn&apos;t the bottleneck?” question is about ambition. With a
-            much larger war chest (e.g., $10M+), GTM changes meaningfully:
-          </p>
-          <ul className="list">
-            <li>
-              <strong>GTM talent:</strong> full enterprise sales pod per region (AE + SE + SDR),
-              plus VP Sales and GTM Ops earlier in the journey.
-            </li>
-            <li>
-              <strong>Verticalization:</strong> parallel AI governance packs for fintech, insurance,
-              healthcare, and eCommerce instead of one-at-a-time.
-            </li>
-            <li>
-              <strong>Partner-first motion:</strong> certification programs for GRC consultancies,
-              co-sell with cloud providers, rev-share with integrators, deployment accelerators.
-            </li>
-            <li>
-              <strong>Brand &amp; trust:</strong> early analyst relations, CISO councils, events, and
-              accelerated SOC2 / ISO / AI governance certifications.
-            </li>
-          </ul>
-          <p>
-            The goal with more capital is not to burn recklessly, but to <strong>own the category
-            before the market fully hardens</strong> — to become the default “agent governance
-            layer” in the same way that Datadog became the default for observability.
-          </p>
         </div>
 
         <div className="panel" style={{ maxHeight: '80vh', overflowY: 'auto' }}>
@@ -1350,17 +1202,9 @@ function JeffViewSection() {
 
           <div className="faq-list">
             {jeffFaqs.map((item, idx) => (
-              <details
-                key={idx}
-                className="faq-item"
-                open={idx < 2}
-              >
-                <summary className="faq-question">
-                  {item.question}
-                </summary>
-                <p className="faq-answer">
-                  {item.answer}
-                </p>
+              <details key={idx} className="faq-item" open={idx < 2}>
+                <summary className="faq-question">{item.question}</summary>
+                <p className="faq-answer">{item.answer}</p>
               </details>
             ))}
           </div>
@@ -1370,9 +1214,437 @@ function JeffViewSection() {
   )
 }
 
+function JeffDiligenceSection() {
+  return (
+    <SectionFrame
+      id="jeff-diligence"
+      kicker="11"
+      title="The Jeff Diligence Framework – Founder–Market–Execution Fit"
+    >
+      <p>
+        This section encodes Jeff’s full due-diligence framework for NeuroAudit: how he evaluates
+        founder–market fit, technical depth, enterprise sales muscle, capital discipline, and
+        long-term resilience. Use it as both an internal scorecard and an investor-facing “we know
+        how we’ll be judged” artifact.
+      </p>
+
+      <div className="grid-2">
+        <div>
+          <details className="faq-item" open>
+            <summary className="faq-question">
+              I. Technical Credibility &amp; Building Capability
+            </summary>
+            <div className="faq-answer">
+              <p>
+                Jeff is testing whether the founding team can actually design and build the four hard
+                pillars of NeuroAudit:
+              </p>
+              <ul className="list">
+                <li>Identity systems for non-human actors.</li>
+                <li>Policy engines and NL→DSL compilers.</li>
+                <li>Cryptographic, append-only evidence ledgers.</li>
+                <li>Enterprise-grade integration connectors.</li>
+              </ul>
+              <p>Key questions he will ask:</p>
+              <ul className="list">
+                <li>
+                  Walk me through your most complex technical architecture decision in the last five
+                  years. What constraint made it hard? How did you reason through tradeoffs?
+                </li>
+                <li>Show me working code or a prototype. What have you personally shipped recently?</li>
+                <li>
+                  Of identity, policy, ledger, and connectors — which can you personally architect?
+                  Which require early hires?
+                </li>
+                <li>
+                  Have you built append-only, tamper-evident systems before? Walk me through the
+                  architecture.
+                </li>
+                <li>
+                  The policy engine compiles natural language to deterministic DSL. What’s your
+                  approach? Any prior compiler/policy engine experience?
+                </li>
+              </ul>
+              <p>
+                <strong>Decision criteria:</strong>
+              </p>
+              <ul className="list">
+                <li>
+                  ✅ <strong>PASS</strong>: At least one founder has shipped production
+                  infrastructure/security systems; working prototype exists; clear technical tradeoff
+                  articulation.
+                </li>
+                <li>
+                  ⚠️ <strong>CONCERN</strong>: Technical depth feels theoretical; no working code;
+                  hiring plan is hand-wavy.
+                </li>
+                <li>
+                  ❌ <strong>FAIL</strong>: Cannot explain core primitives; dramatically underestimates
+                  integration and infra complexity.
+                </li>
+              </ul>
+            </div>
+          </details>
+
+          <details className="faq-item">
+            <summary className="faq-question">
+              II. Enterprise Sales Muscle &amp; Buyer Navigation
+            </summary>
+            <div className="faq-answer">
+              <p>
+                NeuroAudit is a multi-stakeholder, six-figure enterprise sale. Jeff wants proof
+                you’ve done this movie before.
+              </p>
+              <p>Key questions:</p>
+              <ul className="list">
+                <li>
+                  Walk me through the last time you sold a five- or six-figure enterprise deal. Who
+                  was the economic buyer? How long did it take? What almost killed it?
+                </li>
+                <li>
+                  Have you sold into buying committees (security, engineering, compliance,
+                  procurement)? What did that look like?
+                </li>
+                <li>Have you done founder-led sales before? How far will you carry direct sales?</li>
+                <li>
+                  Who are your first 3–5 design partners? Are those paid pilots, and what is the
+                  conversion trigger to production?
+                </li>
+                <li>
+                  If regulated design partners are slow to land, what is the pivot (vertical,
+                  workflow, ICP)?
+                </li>
+              </ul>
+              <p>
+                <strong>Decision criteria:</strong>
+              </p>
+              <ul className="list">
+                <li>
+                  ✅ <strong>PASS</strong>: Has closed enterprise deals &gt;$100K; understands buying
+                  committees; has warm CISO paths; realistic about 6–12 month sales cycles.
+                </li>
+                <li>
+                  ⚠️ <strong>CONCERN</strong>: Strong consulting/presales but never owned quota; vague
+                  design partner list; expects faster cycles than reality.
+                </li>
+                <li>
+                  ❌ <strong>FAIL</strong>: No enterprise sales; “product sells itself”; no plan for
+                  design partners.
+                </li>
+              </ul>
+            </div>
+          </details>
+
+          <details className="faq-item">
+            <summary className="faq-question">
+              III. Domain Authority &amp; Market Credibility
+            </summary>
+            <div className="faq-answer">
+              <p>
+                Jeff wants to know whether CISOs and CROs will see you as credible on AI governance
+                in regulated environments.
+              </p>
+              <p>Key questions:</p>
+              <ul className="list">
+                <li>
+                  Why you? What have you built or lived through that makes you the credible voice on
+                  AI agent governance for banks/fintech/insurers?
+                </li>
+                <li>
+                  Have you shipped systems under GDPR, HIPAA, SOX, PCI, or similar regulatory
+                  constraints?
+                </li>
+                <li>
+                  What’s your personal experience with SOC2 / ISO 42001 / EU AI Act style audits?
+                </li>
+                <li>
+                  Who are your advisors in security/compliance/AI governance, and will they make
+                  intros to buyers?
+                </li>
+              </ul>
+              <p>
+                <strong>Decision criteria:</strong>
+              </p>
+              <ul className="list">
+                <li>
+                  ✅ <strong>PASS</strong>: Deep security/compliance/regulated vertical experience;
+                  credible advisors; recognized in relevant communities.
+                </li>
+                <li>
+                  ⚠️ <strong>CONCERN</strong>: Enterprise/AI tooling experience but little direct
+                  compliance or security exposure.
+                </li>
+                <li>
+                  ❌ <strong>FAIL</strong>: Building from “wishful thinking” with no domain proof
+                  points; buyers have no reason to trust the team.
+                </li>
+              </ul>
+            </div>
+          </details>
+
+          <details className="faq-item">
+            <summary className="faq-question">
+              IV. Execution Capability &amp; Operational Grind
+            </summary>
+            <div className="faq-answer">
+              <p>
+                This is about whether you can survive the first 5–10 design partner deployments,
+                which are high-touch and messy.
+              </p>
+              <p>Key questions:</p>
+              <ul className="list">
+                <li>
+                  You promise &lt;30 days to first value. Break that down: Day 1, Day 15, Day 30.
+                </li>
+                <li>
+                  Who is doing on-the-ground integrations for customer #1–#5? Founder, early
+                  engineer, partner?
+                </li>
+                <li>
+                  If a custom agent framework breaks your connector at 2am, who fixes it? What’s the
+                  SLA mindset?
+                </li>
+                <li>
+                  At $1M ARR (5–8 customers at $150–200K), are you prepared for services-heavy
+                  realities while still building product?
+                </li>
+              </ul>
+              <p>
+                <strong>Decision criteria:</strong>
+              </p>
+              <ul className="list">
+                <li>
+                  ✅ <strong>PASS</strong>: Founder has done integration/implementation personally;
+                  realistic on high-touch early customers; clear view of grind.
+                </li>
+                <li>
+                  ⚠️ <strong>CONCERN</strong>: Underestimates implementation complexity; expects
+                  self-serve too early.
+                </li>
+                <li>
+                  ❌ <strong>FAIL</strong>: “Mostly automated implementation”; no plan for customer
+                  success or production firefighting.
+                </li>
+              </ul>
+            </div>
+          </details>
+        </div>
+
+        {/* Right column – capital, psychology, scoring, red flags */}
+        <div>
+          <details className="faq-item">
+            <summary className="faq-question">
+              V. Capital Discipline &amp; Financial Judgment
+            </summary>
+            <div className="faq-answer">
+              <p>
+                Jeff cares deeply about how you allocate the $2.5M seed, what you pay yourselves,
+                and how you react when plans slip.
+              </p>
+              <p>Key questions:</p>
+              <ul className="list">
+                <li>
+                  How much do founders pay themselves? How long can you personally sustain those
+                  salaries?
+                </li>
+                <li>
+                  Engineering budget vs scope: if core platform takes 12 months instead of 6, what
+                  gets descoped?
+                </li>
+                <li>
+                  What’s your Month 12 contingency plan if milestones are behind and you have
+                  ~$800K left?
+                </li>
+                <li>
+                  At what cash position do you start raising the next round? What if Series A takes
+                  longer than expected?
+                </li>
+              </ul>
+              <p>
+                <strong>Decision criteria:</strong>
+              </p>
+              <ul className="list">
+                <li>
+                  ✅ <strong>PASS</strong>: Founder salaries &lt;$120K; clear contingency plans; focus
+                  on capital efficiency.
+                </li>
+                <li>
+                  ⚠️ <strong>CONCERN</strong>: Higher comp, vague “we’ll hit milestones” belief.
+                </li>
+                <li>
+                  ❌ <strong>FAIL</strong>: Founder comp &gt;$150K at pre-revenue; assumes $2.5M
+                  straightforwardly gets to Series A.
+                </li>
+              </ul>
+            </div>
+          </details>
+
+          <details className="faq-item">
+            <summary className="faq-question">
+              VI. Founder Psychology, Resilience &amp; Team Dynamics
+            </summary>
+            <div className="faq-answer">
+              <p>
+                Enterprise infra for a new category is a 5–7 year grind. Jeff is looking for durable
+                motivation and evidence of surviving “the valley.”
+              </p>
+              <p>Key questions:</p>
+              <ul className="list">
+                <li>
+                  Hardest professional failure or setback? What did you learn and how did it change
+                  your decisions?
+                </li>
+                <li>
+                  Have you been through failed startups, pivots, layoffs, or crises? What happened?
+                </li>
+                <li>
+                  How do you and your co-founder resolve real disagreement (e.g., pivot vs stay the
+                  course at Month 10)?
+                </li>
+                <li>
+                  What are you exceptionally good at, and what drains you? Where do you need help?
+                </li>
+              </ul>
+              <p>
+                <strong>Decision criteria:</strong>
+              </p>
+              <ul className="list">
+                <li>
+                  ✅ <strong>PASS</strong>: Clear history of resilience; strong founder relationship;
+                  high self-awareness.
+                </li>
+                <li>
+                  ⚠️ <strong>CONCERN</strong>: Limited exposure to hard situations; motivation is
+                  mostly financial.
+                </li>
+                <li>
+                  ❌ <strong>FAIL</strong>: Externalizes blame; unclear why they care about this
+                  specific problem; fragile founder dynamics.
+                </li>
+              </ul>
+            </div>
+          </details>
+
+          <details className="faq-item">
+            <summary className="faq-question">VII. The Decisive Questions & Scoring Model</summary>
+            <div className="faq-answer">
+              <p>
+                Jeff distills the whole conversation into three decisive questions and a scoring
+                sheet.
+              </p>
+              <ol className="list">
+                <li>
+                  <strong>The Crisis Test</strong> – “It’s Month 8. You’re behind on product and
+                  design partners; burn is higher than planned. What do you do?”
+                </li>
+                <li>
+                  <strong>The Truth-Telling Test</strong> – “When was the last time you shared
+                  really bad news with a boss/investor? How did you do it?”
+                </li>
+                <li>
+                  <strong>The Why-You Test</strong> – “In 18 months there will be 5–10 competitors.
+                  Why do you win?”
+                </li>
+              </ol>
+
+              <p>
+                <strong>Summary assessment table:</strong>
+              </p>
+              <table className="table">
+                <thead>
+                  <tr>
+                    <th>Dimension</th>
+                    <th>Weight</th>
+                    <th>Score (1–5)</th>
+                    <th>Notes</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>Technical Credibility</td>
+                    <td>25%</td>
+                    <td></td>
+                    <td>Can they build the platform?</td>
+                  </tr>
+                  <tr>
+                    <td>Enterprise Sales Muscle</td>
+                    <td>25%</td>
+                    <td></td>
+                    <td>Can they navigate enterprise buying?</td>
+                  </tr>
+                  <tr>
+                    <td>Domain Authority</td>
+                    <td>15%</td>
+                    <td></td>
+                    <td>Will buyers believe them?</td>
+                  </tr>
+                  <tr>
+                    <td>Execution Capability</td>
+                    <td>15%</td>
+                    <td></td>
+                    <td>Will they do the grind work?</td>
+                  </tr>
+                  <tr>
+                    <td>Capital Discipline</td>
+                    <td>10%</td>
+                    <td></td>
+                    <td>Will they stretch the dollars?</td>
+                  </tr>
+                  <tr>
+                    <td>Founder Resilience</td>
+                    <td>10%</td>
+                    <td></td>
+                    <td>Can they survive the valley?</td>
+                  </tr>
+                </tbody>
+              </table>
+              <p className="muted">
+                4.0+ → strong conviction; 3.5–4.0 → conditional; 3.0–3.5 → revisit with traction;
+                &lt;3.0 → pass.
+              </p>
+            </div>
+          </details>
+
+          <details className="faq-item">
+            <summary className="faq-question">Red Flags & Next Steps</summary>
+            <div className="faq-answer">
+              <p>
+                Jeff is explicit about what ends diligence early and what happens if you pass the
+                bar.
+              </p>
+              <p>
+                <strong>Red flags that kill the deal:</strong>
+              </p>
+              <ul className="list">
+                <li>Cannot explain core technical architecture with depth.</li>
+                <li>Zero enterprise sales experience; expects product to sell itself.</li>
+                <li>No warm paths to target customers; design partner plan is vague.</li>
+                <li>Founder compensation &gt;$150K at pre-revenue stage.</li>
+                <li>Externalizes blame for failures; no resilience evidence.</li>
+                <li>Unclear why they personally need to build this.</li>
+                <li>Believes $2.5M automatically gets to Series A.</li>
+                <li>Founder relationship feels fragile or decision-making unclear.</li>
+              </ul>
+              <p>
+                <strong>If diligence goes well, next steps:</strong>
+              </p>
+              <ul className="list">
+                <li>Reference calls with former colleagues, reports, managers.</li>
+                <li>Back-channel with potential customers (CISOs in target verticals).</li>
+                <li>Technical deep-dive with identity/policy experts.</li>
+                <li>Term sheet discussion: milestones, structure, follow-on commitments.</li>
+              </ul>
+            </div>
+          </details>
+        </div>
+      </div>
+    </SectionFrame>
+  )
+}
+
 function DeckSection() {
   return (
-    <SectionFrame id="deck" kicker="11" title="Slide deck outline (20 slides)">
+    <SectionFrame id="deck" kicker="12" title="Slide deck outline (20 slides)">
       <div className="grid-2">
         <div>
           <ol className="list">
@@ -1384,18 +1656,18 @@ function DeckSection() {
             <li>Solution overview – NeuroAudit control plane</li>
             <li>Product tour – activity log, policies, approvals, simulation</li>
             <li>Demo storyline – refund guardrail and simulation</li>
-            <li>Customer profiles &amp; early use cases</li>
+            <li>Customer profiles & early use cases</li>
             <li>Business model – SaaS with per-agent pricing</li>
             <li>Market size – TAM / SAM / SOM</li>
-            <li>Competitive landscape &amp; positioning</li>
+            <li>Competitive landscape & positioning</li>
             <li>Go-to-market plan – design partners to enterprise scale</li>
             <li>Roadmap – product and platform expansion</li>
-            <li>KPIs &amp; high-level 3-year financials</li>
+            <li>KPIs & high-level 3-year financials</li>
             <li>Team – why we are the right founders</li>
             <li>Moat – data, integrations, and policy engine</li>
-            <li>Risks &amp; how we de-risk them</li>
+            <li>Risks & how we de-risk them</li>
             <li>Vision – becoming the AI governance layer for the enterprise</li>
-            <li>Ask &amp; use of funds</li>
+            <li>Ask & use of funds</li>
           </ol>
         </div>
         <div className="panel">
@@ -1418,7 +1690,7 @@ function DeckSection() {
 
 function ContactSection() {
   return (
-    <SectionFrame id="contact" kicker="12" title="How to use this SPA with investors">
+    <SectionFrame id="contact" kicker="13" title="How to use this SPA with investors">
       <p>
         This site is intentionally built as a single-page React application so you can deploy it to
         Vercel, Netlify, or any static host and share a link with investors, partners, and friends.
@@ -1435,8 +1707,8 @@ function ContactSection() {
         </li>
       </ul>
       <p className="muted">
-        Implementation note: run <code>npm install</code> and <code>npm run dev</code> locally.
-        Then push this folder to GitHub and connect it to Vercel for one-click deployment.
+        Implementation note: run <code>npm install</code> and <code>npm run dev</code> locally. Then
+        push this folder to GitHub and connect it to Vercel for one-click deployment.
       </p>
     </SectionFrame>
   )
