@@ -10,8 +10,261 @@ const sections = [
   { id: 'financials', label: 'Financials' },
   { id: 'playbooks', label: 'AI Governance Playbooks' },
   { id: 'memo', label: 'Investor Memo' },
+  { id: 'jeff-view', label: 'The Jeff View' },
   { id: 'deck', label: 'Slide Outline' },
   { id: 'contact', label: 'How to Use This' },
+]
+
+const jeffFaqs = [
+  {
+    question: '1. Performance & Latency',
+    answer: `NeuroAudit is implemented as a low-latency governance sidecar, not a heavy inline proxy.
+
+• Typical p99 overhead: ~4–12 ms per governed action via async policy checks and local decision caches.
+• Each workflow chooses fail behavior:
+  – Fail-safe (block actions if NeuroAudit is unavailable) for high-risk flows.
+  – Fail-open (log-only) for lower-risk or non-critical flows.
+
+This lets CISOs protect critical workflows without introducing unacceptable latency or fragility.`
+  },
+  {
+    question: '2. Intent Capture Mechanism',
+    answer: `We support multiple ways to capture or infer intent:
+
+• Modern agents: a lightweight SDK requires agents to emit structured intent (action, target, amount, user, risk context) before performing a system action.
+• Legacy / opaque agents: proxy observers and structured parsing infer intent from outputs and API calls even if we don’t control source code.
+• Multi-step / planning agents: we model intent as a sequence and link each step in the reasoning and execution chain.
+
+We don’t need to read model internals — we govern behavior at the action level with rich contextual metadata.`
+  },
+  {
+    question: '3. Brownfield Reality',
+    answer: `We assume a messy AI estate with 200+ systems, ex-employees, and third-party SaaS.
+
+Integration patterns:
+
+• SDKs / middleware wrappers for in-house agents and orchestrators (LangChain, CrewAI, custom).
+• API gateways / proxies for SaaS AI tools where we can observe and govern flows via APIs/webhooks.
+• Low-code connectors into CRMs, ticketing, payments, and core systems.
+
+The “14 hours per connector” estimate is incremental once base plumbing and patterns exist, not a promise to instrument an entire estate from scratch in that time.`
+  },
+  {
+    question: '4. Meta-Governance Problem',
+    answer: `NeuroAudit itself is treated as a high-value, privileged system:
+
+• Isolated control plane, strong RBAC, hardened infra (VPC/VNet or on-prem options).
+• Signed policy bundles so any tampering is detectable.
+• Full self-audit: every administrative action is logged and evidence-chained.
+• Customers can run NeuroAudit in a dedicated, private environment to minimize blast radius.
+
+If an attacker targets NeuroAudit, they face a hardened surface, signed configs, and complete audit trails — which is far better than bespoke, scattered governance logic.`
+  },
+  {
+    question: '5. Cryptographic Identity for Agents',
+    answer: `“Cryptographic identity” is concrete:
+
+• Agents get short-lived certificates or signed tokens from a non-human PKI.
+• Identity lifecycle (issue, rotate, revoke) is programmatic and integrated into orchestration flows.
+• Downstream systems expect NeuroAudit-verified identities, reducing impersonation risk.
+
+We move away from untracked service accounts and static API keys toward time-bounded, traceable non-human identities.`
+  },
+  {
+    question: '6. Evidence Immutability',
+    answer: `We maintain a tamper-evident, cryptographically verifiable evidence ledger:
+
+• Append-only log backed by Merkle trees; each record is hashed and chained.
+• Every action, intent, and policy decision is signed and time-stamped.
+• Evidence export and data sovereignty:
+  – Logs can be exported to your archival / legal systems.
+  – Storage can be pinned to specific jurisdictions to satisfy residency constraints.
+
+Regulators, auditors, or legal teams can verify that the evidence has not been altered.`
+  },
+  {
+    question: '7. Policy Configuration Burden',
+    answer: `We designed the policy layer to avoid “rule swamp”:
+
+• Policies are written in natural language and compiled into a deterministic DSL.
+• We provide workflow-specific templates (e.g., refunds, PII access, credit changes) so teams don’t start from zero.
+• Simulation runs policies against historical actions to expose conflicts and excessive false positives before enforcement.
+• Policy ownership typically sits with security / risk teams, in partnership with AI platform teams.
+
+Net effect: less configuration from scratch, fewer surprises in production, clearer accountability.`
+  },
+  {
+    question: '8. Agent vs Workflow Confusion (Concept & Pricing)',
+    answer: `We distinguish:
+
+• Workflows: governed business processes (e.g., “refund > $500 with PII involvement”).
+• Agents: runtime executors inside those workflows.
+
+Governance attaches primarily to workflows, because that’s where business risk lives. Agents are metered as usage:
+
+• Long-lived named agents billed individually.
+• Ephemeral agent swarms billed via aggregate utilization rather than per-instance.
+
+This keeps pricing predictable and aligned with business value, even when architectures are highly dynamic.`
+  },
+  {
+    question: '9. Simulation Engine Reliability',
+    answer: `Simulation doesn’t try to re-run the LLM; it re-runs policies:
+
+• We replay stored intents and context through the policy engine deterministically.
+• We do not re-sample model outputs — we use real historical actions and decisions.
+• Drift detection looks at changing distributions (denies, escalations, risky actions) over time.
+
+This approach avoids “random” simulations and focuses on policy correctness and drift, not pseudo-reproducing AI randomness.`
+  },
+  {
+    question: '10. SIEM Integration vs Replacement',
+    answer: `NeuroAudit is not a SIEM/SOAR replacement — it is a specialized evidence source:
+
+• Streams structured AI governance events into Splunk, Sentinel, Chronicle, etc.
+• SOC analysts continue working inside their existing SIEM console.
+• SOAR tools can trigger incident response and automation based on NeuroAudit signals.
+
+We reduce operational fragmentation by feeding richer AI context into systems teams already use, instead of trying to replace them.`
+  },
+  {
+    question: '11. AI Firewall Differentiation',
+    answer: `AI firewalls operate at the text layer:
+
+• Inspect prompts and responses.
+• Sometimes validate outputs for toxicity / leakage.
+
+NeuroAudit operates at the **action** layer:
+
+• Governs what the agent actually did in your systems (refunds, data moves, access changes).
+• Is model- and vendor-agnostic.
+• Produces a behavioral ledger with policy traces and evidence.
+
+Even as firewalls “move downstream,” they are not built as unified behavioral governance platforms with identity, policy, simulation, and evidence in one place.`
+  },
+  {
+    question: '12. Identity Platform Extension',
+    answer: `Identity providers answer: “Who is this identity, and can they authenticate?”
+
+NeuroAudit answers: “Given this identity (human or agent) and this context, should this specific action be allowed, escalated, or denied — and what is the evidence?”
+
+We integrate with identity platforms:
+
+• They manage access to systems.
+• We govern behavior across those systems over time, with policy and proof.
+
+The two are complementary, not substitutes.`
+  },
+  {
+    question: '13. AI Act Ambiguity',
+    answer: `The EU AI Act is still evolving, but it clearly mandates:
+
+• Risk management for high-risk systems.
+• Logging and traceability.
+• Human oversight and accountability.
+
+NeuroAudit’s compliance packs map capabilities to concrete obligations (e.g., Articles 9, 12, 14, 18) for:
+
+• Logging and evidence.
+• Risk / control workflows.
+• Oversight and escalation.
+
+We are explicit: we support compliance with strong technical controls, but we are not a “magic compliance stamp.”`
+  },
+  {
+    question: '14. SOC2 AI Addendum',
+    answer: `SOC2 AI guidance is emerging, not final.
+
+Our design principles:
+
+• Align with core SOC2 themes (change management, logging, access control, segregation of duties) applied to AI workflows.
+• Ensure our evidence model is flexible enough to map into whichever formal frameworks get standardized.
+
+We do not invent proprietary “standards”; we make it easier for auditors to map NeuroAudit evidence to their control catalogs.`
+  },
+  {
+    question: '15. Evidence in Legal/Regulatory Context',
+    answer: `We design logs as potential legal evidence:
+
+• Time-stamped, signed, chain-of-custody tracked.
+• Exportable into e-discovery and legal archiving tooling.
+• Access and changes to evidence are themselves logged.
+
+We work with counsel and customer legal teams to ensure that log structure and chain-of-custody practices align with admissibility expectations, even though admissibility is always case- and jurisdiction-specific.`
+  },
+  {
+    question: '16. Services Revenue Trap',
+    answer: `Early on, deployments do include services:
+
+• Workflow mapping, connector setup, policy modeling, simulation.
+
+To avoid becoming a consulting company:
+
+• We invest in reusable templates, connectors, and guided configuration.
+• Partners (GRC firms, system integrators) take on more of the services load over time.
+• Net-new workflow and customer deployments get progressively lighter.
+
+By customer #10–#20, revenue mix tilts toward platform ARR with decreasing marginal services.`
+  },
+  {
+    question: '17. Expansion Assumption',
+    answer: `Workflows across regulated industries share a common grammar:
+
+• Actor, asset, thresholds, approvals, risk scores, evidence.
+
+NeuroAudit exploits that:
+
+• Schemas and evidence models are reused across workflows.
+• Only policy thresholds and context-specific conditions need tuning.
+
+That is why expansion is not “rebuild everything per workflow,” but incremental configuration on top of a shared platform.`
+  },
+  {
+    question: '18. Channel Complexity',
+    answer: `Channel design:
+
+• Partners receive attractive license and services margins, but not so high that they’re incented to re-build us.
+• Core IP — behavioral ledger, policy compiler, simulation engine, non-human PKI — is technically deep and non-trivial.
+
+We support partners with training, certification, and co-sell motions. They make money delivering NeuroAudit, not reinventing it.`
+  },
+  {
+    question: '19. Platform Dependency Risk',
+    answer: `We treat “what if you go away?” as a design requirement:
+
+• Open, documented schemas for all evidence and logs.
+• Reversible connectors and clean boundaries so customers retain control of their systems.
+• Self-hosted or private-cloud deployment options for critical customers.
+• Clear export paths for all data and configuration.
+
+We are foundational — but not a black box or a one-way door.`
+  },
+  {
+    question: '20. Acquisition Value vs Build',
+    answer: `For platforms like Databricks, ServiceNow, Wiz, or hyperscalers:
+
+• Building this internally requires cross-team coordination across security, observability, AI, and compliance product lines.
+• Buying or partnering with a focused, adoption-proven governance stack is faster and cheaper.
+
+Our long-term value is not “we were first,” but:
+• Deep integration with AI workflows.
+• A defensible behavioral ledger + policy + simulation stack.
+• Embeddedness in regulated customer environments.`
+  },
+  {
+    question: '21. The Synthesis Question – Irreducible Core',
+    answer: `NeuroAudit’s irreducible core:
+
+• Causally complete, cryptographically verifiable, real-time governance of AI system actions across heterogeneous agents and workflows.
+
+No existing combination of SIEM, identity, logging, firewalls, and manual process:
+
+• Unifies agent identity, intent, policy, actions, and evidence into a single chain.
+• Lets you simulate and test policies across all that behavior.
+• Does so in a vendor-neutral way across multiple AI and systems stacks.
+
+That unified behavioral control plane is what justifies introducing NeuroAudit as a foundational layer.`
+  }
 ]
 
 function scrollToSection(id) {
@@ -56,7 +309,7 @@ export default function App() {
   return (
     <div className="app-root">
       <div className="app-shell">
-        <button 
+        <button
           className="mobile-menu-toggle"
           onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
           aria-label="Toggle menu"
@@ -88,7 +341,10 @@ export default function App() {
             Seed-stage concept • This site is a prototype investor brief rendered as a SPA.
           </div>
         </aside>
-        <div className={`mobile-overlay ${mobileMenuOpen ? 'active' : ''}`} onClick={() => setMobileMenuOpen(false)}></div>
+        <div
+          className={`mobile-overlay ${mobileMenuOpen ? 'active' : ''}`}
+          onClick={() => setMobileMenuOpen(false)}
+        ></div>
         <main className="main">
           <Hero />
           <OverviewSection />
@@ -100,6 +356,7 @@ export default function App() {
           <FinancialsSection />
           <PlaybooksSection />
           <MemoSection />
+          <JeffViewSection />
           <DeckSection />
           <ContactSection />
         </main>
@@ -118,10 +375,14 @@ function Hero() {
       <div className="hero-title">The control plane for AI agents in regulated industries.</div>
       <div className="hero-subtitle">
         NeuroAudit gives enterprises a single place to monitor, govern, and audit every AI-driven
-        action across their stack – before regulators, customers, or attackers do.
+        action across their stack – before regulators, customers, or attackers do. For a hard-nosed,
+        operator view of the business, see <strong>The Jeff View</strong> below.
       </div>
       <div className="hero-cta-row">
-        <button className="btn btn-primary" onClick={() => scrollToSection('memo')}>
+        <button className="btn btn-primary" onClick={() => scrollToSection('jeff-view')}>
+          See The Jeff View
+        </button>
+        <button className="btn btn-secondary" onClick={() => scrollToSection('memo')}>
           Read the investor memo
         </button>
         <button className="btn btn-secondary" onClick={() => scrollToSection('deck')}>
@@ -337,13 +598,13 @@ function MarketSection() {
           </p>
           <ul className="list">
             <li>
-              <strong>TAM:</strong> ~${'{'}25{'}'}B AI security/governance by 2030.
+              <strong>TAM:</strong> ~$25B AI security/governance by 2030.
             </li>
             <li>
-              <strong>SAM:</strong> ~${'{'}8{'}'}B focused on enterprises with live AI agents.
+              <strong>SAM:</strong> ~$8B focused on enterprises with live AI agents.
             </li>
             <li>
-              <strong>SOM:</strong> ~${'{'}0.5{'}'}B reachable in fintech, banking, insurance, and
+              <strong>SOM:</strong> ~$0.5B reachable in fintech, banking, insurance, and
               SaaS in the next 3–5 years.
             </li>
           </ul>
@@ -528,8 +789,7 @@ function PlaybooksSection() {
 }
 
 function MemoSection() {
-  const memoText = `
-NeuroAudit – Investor Memo (draft)
+  const memoText = `NeuroAudit – Investor Memo (draft)
 
 Thesis
 AI agents will be embedded into every serious enterprise workflow, from underwriting and refunds to HR and operations. Once that happens, the question every CISO, Chief Risk Officer, and regulator will ask is simple: who is watching the AI, what are the guardrails, and how do we prove it?
@@ -573,8 +833,7 @@ Ask
 We are exploring a pre-seed/seed round to:
 • Build production-grade integrations and policy engine
 • Run 3–5 design partner deployments in fintech/insurance
-• Achieve early ARR with strong expansion signals.
-`
+• Achieve early ARR with strong expansion signals.`
   return (
     <SectionFrame id="memo" kicker="09" title="Investor memo – narrative summary">
       <div className="memo-block">{memoText}</div>
@@ -582,9 +841,136 @@ We are exploring a pre-seed/seed round to:
   )
 }
 
+function JeffViewSection() {
+  return (
+    <SectionFrame id="jeff-view" kicker="10" title="The Jeff View – Hard Questions & Answers">
+      <div className="grid-2">
+        <div>
+          <p>
+            This section structures the NeuroAudit plan the way Jeff likes to evaluate companies:
+            clear platform definition, buyer clarity, build-vs-buy reality, competitive moat,
+            timing, and a full CISO due-diligence Q&amp;A.
+          </p>
+
+          <h3 className="subheading">1. App or Platform?</h3>
+          <p>
+            Jeff&apos;s first forcing question: “If this is an app, it&apos;s a feature. If it&apos;s a
+            platform, show me the primitives.”
+          </p>
+          <p>
+            NeuroAudit is a platform defined by five primitives reused across every deployment:
+          </p>
+          <ul className="list">
+            <li><strong>Identity</strong> – cryptographic identities for non-human agents.</li>
+            <li><strong>Intent</strong> – structured capture/inference of what an agent is trying to do.</li>
+            <li><strong>Policy</strong> – natural-language rules compiled to a deterministic DSL.</li>
+            <li><strong>Action</strong> – inline governance of system-level actions (refunds, credit, PII, access).</li>
+            <li><strong>Evidence</strong> – append-only, verifiable behavioral ledger for regulators and auditors.</li>
+          </ul>
+
+          <h3 className="subheading">2. Who Actually Buys?</h3>
+          <p>
+            The buyer stack is explicit:
+          </p>
+          <ul className="list">
+            <li><strong>CISO</strong> – primary economic buyer; owns AI risk and security posture.</li>
+            <li><strong>Head of AI / Platform Engineering</strong> – technical champion and implementer.</li>
+            <li><strong>CRO / Compliance</strong> – economic influencer focused on evidence &amp; controls.</li>
+          </ul>
+
+          <h3 className="subheading">3. How Do They Solve It Today?</h3>
+          <p>
+            Today’s reality is a patchwork: SIEM logs, prompt security tools, homegrown scripts,
+            Slack approvals, and CSV exports. These are:
+          </p>
+          <ul className="list">
+            <li><strong>Incomplete</strong> – no unified view of AI behavior across workflows.</li>
+            <li><strong>Unverifiable</strong> – no cryptographic integrity or chain-of-custody.</li>
+            <li><strong>Non-deterministic</strong> – policies exist in docs, not in code.</li>
+            <li><strong>Non-compliant</strong> – difficult to defend under AI Act / SOC2 / ISO 42001.</li>
+          </ul>
+
+          <h3 className="subheading">4. Build vs Buy – Can They Just Build It?</h3>
+          <p>
+            Jeff’s CFO lens: “If I can build this cheaper internally, your deal dies.”
+          </p>
+          <p>
+            To replicate NeuroAudit, an enterprise must build:
+          </p>
+          <ul className="list">
+            <li>Non-human identity / PKI and lifecycle management for agents.</li>
+            <li>Intent capture and normalization across multiple agent frameworks.</li>
+            <li>A behavioral telemetry stack that spans tools, APIs, and vendors.</li>
+            <li>An inline policy engine with NL→DSL compilation and real-time enforcement.</li>
+            <li>An immutable, cryptographically verifiable evidence ledger.</li>
+            <li>A simulation and drift detection engine tuned for agent behavior.</li>
+          </ul>
+          <p>
+            Realistic cost: <strong>6–10 engineers × 12–18 months = $3.6M–$6.2M</strong> plus ongoing maintenance.
+            NeuroAudit typically lands at <strong>$180K–$480K/year</strong> for a serious deployment.
+          </p>
+
+          <h3 className="subheading">5. Why Won’t Big Vendors Crush This?</h3>
+          <p>
+            Jeff&apos;s competitive question: “Why wouldn&apos;t Microsoft, Google, or Palo Alto just ship this?”
+          </p>
+          <p>
+            Our moat is depth + neutrality:
+          </p>
+          <ul className="list">
+            <li>Neutral across OpenAI, Anthropic, local models, custom agents, SaaS AI.</li>
+            <li>Behavioral ledger purpose-built for AI actions, not generic logs.</li>
+            <li>NL→DSL policy compiler wired to AI workflows and systems of record.</li>
+            <li>Non-human PKI and lifecycle management for agents.</li>
+            <li>Simulation engine focused on agent behavior and policy drift.</li>
+            <li>Vertical templates and compliance packs for regulated workflows.</li>
+          </ul>
+
+          <h3 className="subheading">6. Why Now?</h3>
+          <p>
+            Timing is driven by regulation and real incidents:
+          </p>
+          <ul className="list">
+            <li>EU AI Act enforcement windows arriving for high-risk systems.</li>
+            <li>Emerging SOC2 AI and ISO/IEC 42001 frameworks.</li>
+            <li>AI-caused financial, data, and reputational incidents appearing in the wild.</li>
+            <li>Explosion of multi-agent architectures acting on real systems, not just chat.</li>
+            <li>Boards and regulators asking: “What are your AI agents doing, and how do you prove it?”</li>
+          </ul>
+        </div>
+
+        <div className="panel" style={{ maxHeight: '80vh', overflowY: 'auto' }}>
+          <div className="metric-label">CISO Due-Diligence FAQ (21 Qs)</div>
+          <div className="metric-caption" style={{ marginBottom: 12 }}>
+            The following questions and answers map directly to how a skeptical CISO or CIO would
+            interrogate NeuroAudit before approving a deployment.
+          </div>
+
+          <div className="faq-list">
+            {jeffFaqs.map((item, idx) => (
+              <details
+                key={idx}
+                className="faq-item"
+                open={idx < 2}
+              >
+                <summary className="faq-question">
+                  {item.question}
+                </summary>
+                <p className="faq-answer">
+                  {item.answer}
+                </p>
+              </details>
+            ))}
+          </div>
+        </div>
+      </div>
+    </SectionFrame>
+  )
+}
+
 function DeckSection() {
   return (
-    <SectionFrame id="deck" kicker="10" title="Slide deck outline (20 slides)">
+    <SectionFrame id="deck" kicker="11" title="Slide deck outline (20 slides)">
       <div className="grid-2">
         <div>
           <ol className="list">
@@ -630,7 +1016,7 @@ function DeckSection() {
 
 function ContactSection() {
   return (
-    <SectionFrame id="contact" kicker="11" title="How to use this SPA with investors">
+    <SectionFrame id="contact" kicker="12" title="How to use this SPA with investors">
       <p>
         This site is intentionally built as a single-page React application so you can deploy it to
         Vercel, Netlify, or any static host and share a link with investors, partners, and friends.
@@ -646,7 +1032,7 @@ function ContactSection() {
           the idea.
         </li>
       </ul>
-      <p style={{ fontSize: 12, color: 'var(--muted)' }}>
+      <p className="muted">
         Implementation note: run <code>npm install</code> and <code>npm run dev</code> locally.
         Then push this folder to GitHub and connect it to Vercel for one-click deployment.
       </p>
