@@ -1,14 +1,14 @@
 import React, { useEffect, useState } from 'react'
 import {
-  Chart as ChartJS,
-  LinearScale,
-  PointElement,
+  ResponsiveContainer,
+  ScatterChart,
+  Scatter,
+  XAxis,
+  YAxis,
+  CartesianGrid,
   Tooltip,
-  Legend,
-  Title as ChartTitle,
-  ScatterController,
-} from 'chart.js'
-import { Scatter } from 'react-chartjs-2'
+  Label,
+} from 'recharts'
 
 const sections = [
   { id: 'overview', label: 'Overview' },
@@ -225,7 +225,7 @@ By customer #10–#20, revenue mix tilts toward platform ARR with decreasing mar
 NeuroAudit exploits that:
 
 • Schemas and evidence models are reused across workflows.
-• Only policy thresholds and context-specific conditions need tuning.
+                        • Only policy thresholds and context-specific conditions need tuning.
 
 That is why expansion is not “rebuild everything per workflow,” but incremental configuration on top of a shared platform.`
   },
@@ -277,113 +277,62 @@ That unified behavioral control plane is what justifies introducing NeuroAudit a
   }
 ]
 
-ChartJS.register(
-  LinearScale,
-  PointElement,
-  Tooltip,
-  Legend,
-  ChartTitle,
-  ScatterController
-)
+const competitionPositions = [
+  // NeuroAudit – keep this as the hero (purple)
+  { name: 'NeuroAudit', x: 9, y: 9, isNeuro: true },
 
-function CompetitiveQuadrant() {
-  const data = {
-    datasets: [
-      {
-        label: 'NeuroAudit',
-        data: [{ x: 0.9, y: 0.95 }],
-        backgroundColor: 'rgba(79, 70, 229, 1)',
-        pointRadius: 8,
-      },
-      {
-        label: 'Credo AI',
-        data: [{ x: 0.6, y: 0.4 }],
-        backgroundColor: 'rgba(16, 185, 129, 0.9)',
-        pointRadius: 6,
-      },
-      {
-        label: 'Zenity',
-        data: [{ x: 0.45, y: 0.55 }],
-        backgroundColor: 'rgba(245, 158, 11, 0.9)',
-        pointRadius: 6,
-      },
-      {
-        label: 'Noma Security',
-        data: [{ x: 0.55, y: 0.65 }],
-        backgroundColor: 'rgba(236, 72, 153, 0.9)',
-        pointRadius: 6,
-      },
-      {
-        label: 'Astrix',
-        data: [{ x: 0.35, y: 0.75 }],
-        backgroundColor: 'rgba(59, 130, 246, 0.9)',
-        pointRadius: 6,
-      },
-      {
-        label: 'Holistic AI',
-        data: [{ x: 0.7, y: 0.35 }],
-        backgroundColor: 'rgba(107, 114, 128, 0.9)',
-        pointRadius: 6,
-      },
-    ],
-  }
+  // Competitors – each with its own color
+  {
+    name: 'Astrix',
+    x: 3,
+    y: 8,
+    isNeuro: false,
+    color: '#f97316',      // orange
+    stroke: '#c2410c',
+  },
+  {
+    name: 'Noma',
+    x: 4,
+    y: 7,
+    isNeuro: false,
+    color: '#10b981',      // emerald
+    stroke: '#047857',
+  },
+  {
+    name: 'Zenity',
+    x: 5,
+    y: 6,
+    isNeuro: false,
+    color: '#0ea5e9',      // sky
+    stroke: '#0369a1',
+  },
+  {
+    name: 'Credo AI',
+    x: 7,
+    y: 5,
+    isNeuro: false,
+    color: '#e11d48',      // rose
+    stroke: '#9f1239',
+  },
+  {
+    name: 'Holistic AI',
+    x: 7,
+    y: 4,
+    isNeuro: false,
+    color: '#22c55e',      // green
+    stroke: '#15803d',
+  },
+  {
+    name: 'Securiti AI',
+    x: 8,
+    y: 4,
+    isNeuro: false,
+    color: '#a855f7',      // violet
+    stroke: '#7e22ce',
+  },
+]
 
-  const options = {
-    responsive: true,
-    plugins: {
-      legend: {
-        position: 'right',
-      },
-      title: {
-        display: true,
-        text: 'Competitive 2×2 – Depth vs Breadth',
-        font: { size: 14 },
-      },
-      tooltip: {
-        callbacks: {
-          label: (ctx) =>
-            `${ctx.dataset.label} (${ctx.parsed.x.toFixed(2)}, ${ctx.parsed.y.toFixed(2)})`,
-        },
-      },
-    },
-    scales: {
-      x: {
-        min: 0,
-        max: 1,
-        title: {
-          display: true,
-          text: 'Breadth Across AI & Systems →',
-          font: { size: 12 },
-        },
-        grid: { color: 'rgba(148, 163, 184, 0.3)' },
-      },
-      y: {
-        min: 0,
-        max: 1,
-        title: {
-          display: true,
-          text: '↑ Depth of Action Governance',
-          font: { size: 12 },
-        },
-        grid: { color: 'rgba(148, 163, 184, 0.3)' },
-      },
-    },
-  }
 
-  return (
-    <div
-      style={{
-        marginTop: 12,
-        borderRadius: 12,
-        border: '1px solid rgba(148,163,184,0.5)',
-        padding: 12,
-        background: 'rgba(15,23,42,0.02)',
-      }}
-    >
-      <Scatter data={data} options={options} height={260} />
-    </div>
-  )
-}
 
 function scrollToSection(id) {
   const el = document.getElementById(id)
@@ -440,7 +389,7 @@ export default function App() {
           <div className="sidebar-header">
             <div>
               <div className="logo">NeuroAudit</div>
-              <div className="logo-tagline">AI agent security, governance & audit</div>
+              <div className="logo-tagline">AI agent security, governance &amp; audit</div>
             </div>
           </div>
           <nav className="nav">
@@ -488,7 +437,7 @@ function Hero() {
     <section>
       <div className="hero-tag">
         <span className="hero-tag-dot" />
-        AI security & governance for the agent era
+        AI security &amp; governance for the agent era
       </div>
       <div className="hero-title">The control plane for AI agents in regulated industries.</div>
       <div className="hero-subtitle">
@@ -550,7 +499,7 @@ function OverviewSection() {
           <div className="panel">
             <div className="metric-label">Initial target customers</div>
             <div className="metric-value">Fintech, Banks, Insurers</div>
-            <div className="metric-caption">Where AI is live & regulators are watching.</div>
+            <div className="metric-caption">Where AI is live &amp; regulators are watching.</div>
           </div>
           <div className="panel">
             <div className="metric-label">Business model</div>
@@ -609,7 +558,7 @@ function ProblemSection() {
 
 function SolutionSection() {
   return (
-    <SectionFrame id="solution" kicker="03" title="Solution & product – The AI agent control plane">
+    <SectionFrame id="solution" kicker="03" title="Solution &amp; product – The AI agent control plane">
       <div className="grid-2">
         <div>
           <p>NeuroAudit is a control plane that sits between AI agents and the systems they act on.</p>
@@ -706,7 +655,7 @@ function BusinessModelSection() {
 
 function MarketSection() {
   return (
-    <SectionFrame id="market" kicker="05" title="Market & competition">
+    <SectionFrame id="market" kicker="05" title="Market &amp; competition">
       <div className="grid-2">
         <div>
           <p>
@@ -773,8 +722,8 @@ function GtmSection() {
               workflows. Integrate with 1–2 critical systems (payments, card core, CRM).
             </li>
             <li>
-              <strong>Phase 2 – mid-market & enterprise sales:</strong> direct outreach to CISOs,
-              Chief Risk Officers, and Heads of AI/ML & Platform Engineering.
+              <strong>Phase 2 – mid-market &amp; enterprise sales:</strong> direct outreach to CISOs,
+              Chief Risk Officers, and Heads of AI/ML &amp; Platform Engineering.
             </li>
             <li>
               <strong>Phase 3 – partner ecosystem:</strong> consulting firms, cloud providers, and
@@ -885,7 +834,7 @@ function PlaybooksSection() {
               review; log and explain all adverse actions.”
             </li>
             <li>
-              <strong>Access & permissions:</strong> “Temporary access grants must expire and be
+              <strong>Access &amp; permissions:</strong> “Temporary access grants must expire and be
               tied to explicit approvals.”
             </li>
           </ul>
@@ -959,15 +908,52 @@ We are exploring a pre-seed/seed round to:
   )
 }
 
+const renderScatterPoint = (props) => {
+  const { cx, cy, payload } = props
+  const isNeuro = payload?.isNeuro
+
+  const fill = isNeuro
+    ? '#4f46e5' // NeuroAudit – indigo
+    : payload?.color || '#9ca3af' // fallback gray if no color
+
+  const stroke = isNeuro
+    ? '#312e81'
+    : payload?.stroke || '#6b7280'
+
+  return (
+    <g>
+      <circle
+        cx={cx}
+        cy={cy}
+        r={6}
+        fill={fill}
+        stroke={stroke}
+        strokeWidth={1.5}
+      />
+      <text
+        x={cx + 8}
+        y={cy - 6}
+        fontSize={10}
+        fill="#0f172a"
+      >
+        {payload?.name}
+      </text>
+    </g>
+  )
+}
+
+
+
 function JeffViewSection() {
   return (
-    <SectionFrame id="jeff-view" kicker="10" title="The Jeff View – Hard Questions & Answers">
+    <SectionFrame id="jeff-view" kicker="10" title="The Jeff View – Hard Questions &amp; Answers">
       <div className="grid-2">
         <div>
           <p>
             This section structures the NeuroAudit plan the way Jeff likes to evaluate companies:
             clear platform definition, buyer clarity, build-vs-buy reality, competitive moat,
-            timing, and a full CISO due-diligence Q&amp;A.
+            timing, a full CISO due-diligence Q&amp;A, and a concrete plan for how seed money,
+            milestones, PMF, team, and GTM fit together.
           </p>
 
           <h3 className="subheading">1. App or Platform?</h3>
@@ -1056,7 +1042,7 @@ function JeffViewSection() {
             <li>Boards and regulators asking: “What are your AI agents doing, and how do you prove it?”</li>
           </ul>
 
-          <h3 className="subheading">7. Competitive Landscape – Startups & Vendors</h3>
+          <h3 className="subheading">7. Competitive Landscape – Startups &amp; Vendors</h3>
           <p>
             How NeuroAudit sits relative to current AI governance / security players Jeff will ask about:
           </p>
@@ -1067,44 +1053,31 @@ function JeffViewSection() {
                 <tr>
                   <th>Company</th>
                   <th>Stage / Focus</th>
-                  <th>What They Do</th>
                   <th>How NeuroAudit Differs</th>
                 </tr>
               </thead>
               <tbody>
                 <tr>
                   <td>Credo AI</td>
-                  <td>Growth – AI governance, risk &amp; compliance</td>
+                  <td>Growth – AI governance, risk &amp; compliance for models &amp; vendors.</td>
                   <td>
-                    AI governance &amp; risk platform: model and vendor inventory, risk scoring,
-                    policy catalogs, and documentation for AI initiatives.
-                  </td>
-                  <td>
-                    Strong on model/vendor governance; less focused on fine-grained, real-time
-                    control of AI agent actions inside business workflows with a cryptographic
-                    evidence ledger.
+                    Strong on model/vendor governance and policy catalogs; less focused on
+                    fine-grained, real-time control of AI agent actions inside business workflows
+                    with a cryptographic evidence ledger.
                   </td>
                 </tr>
                 <tr>
                   <td>Zenity</td>
-                  <td>Startup – security for AI agents &amp; SaaS/low-code</td>
+                  <td>Startup – security for AI agents &amp; SaaS/low-code environments.</td>
                   <td>
-                    Discovers AI apps/agents in SaaS &amp; low-code platforms, monitors usage and
-                    misconfigurations, and applies security policies to reduce Shadow AI risk.
-                  </td>
-                  <td>
-                    Focuses on agent and SaaS security posture. NeuroAudit goes deeper on per-action
-                    policy decisions, approvals, simulation, and auditor-grade evidence for
-                    regulated workflows.
+                    Focuses on agent and SaaS security posture. NeuroAudit goes deeper on
+                    per-action policy decisions, approvals, simulation, and auditor-grade evidence
+                    for regulated workflows.
                   </td>
                 </tr>
                 <tr>
                   <td>Noma Security</td>
-                  <td>Startup – AI agent security &amp; governance</td>
-                  <td>
-                    Protects AI agents at runtime: risk detection, controls around AI assets, and
-                    security guardrails on agent behavior.
-                  </td>
+                  <td>Startup – AI agent security &amp; governance, runtime controls.</td>
                   <td>
                     Strong on agent and AI asset risk; NeuroAudit positions itself as the
                     action-of-record layer: identity → intent → policy → action → evidence across
@@ -1113,24 +1086,16 @@ function JeffViewSection() {
                 </tr>
                 <tr>
                   <td>Securiti AI</td>
-                  <td>Growth – AI security &amp; data/model governance</td>
-                  <td>
-                    Data- and model-centric governance: discovery, classification, access control,
-                    and risk management for AI and data pipelines.
-                  </td>
+                  <td>Growth – AI security &amp; data/model governance.</td>
                   <td>
                     Excellent data and model governance; NeuroAudit complements this by governing
-                    what agents actually do to systems (refunds, credit changes, PII exports,
-                    access) and proving it for auditors and regulators.
+                    what agents actually do to systems (refunds, credit changes, PII exports, access)
+                    and proving it for auditors and regulators.
                   </td>
                 </tr>
                 <tr>
                   <td>Astrix</td>
-                  <td>Startup – non-human / agent identity &amp; least-privilege</td>
-                  <td>
-                    Identity &amp; access for non-human actors: discovers machine/agent identities,
-                    manages credentials, and enforces least-privilege access.
-                  </td>
+                  <td>Startup – non-human / agent identity &amp; least-privilege access.</td>
                   <td>
                     Astrix focuses on identity &amp; access for agents (one of our primitives).
                     NeuroAudit incorporates that primitive but adds policy compilation,
@@ -1139,11 +1104,7 @@ function JeffViewSection() {
                 </tr>
                 <tr>
                   <td>Holistic AI</td>
-                  <td>Growth – lifecycle AI governance</td>
-                  <td>
-                    End-to-end AI governance: risk assessment, bias &amp; performance monitoring,
-                    and compliance reporting across the AI lifecycle.
-                  </td>
+                  <td>Growth – lifecycle AI governance across models, risk, compliance.</td>
                   <td>
                     Broad AI governance across the lifecycle; NeuroAudit goes narrow and deep on
                     agent behavior in production systems: real-time policy enforcement, simulations,
@@ -1158,6 +1119,7 @@ function JeffViewSection() {
               intent, policy, execution, and evidence into a single control plane.
             </p>
 
+            {/* Real 2×2 scatter chart using Recharts */}
             <div
               style={{
                 marginTop: 10,
@@ -1170,9 +1132,213 @@ function JeffViewSection() {
               <p className="muted" style={{ marginBottom: 6 }}>
                 Y-axis: Depth of action governance • X-axis: Breadth across AI &amp; systems
               </p>
-              <CompetitiveQuadrant />
+              <div style={{ width: '100%', height: 220 }}>
+                <ResponsiveContainer>
+                  <ScatterChart margin={{ top: 10, right: 10, bottom: 20, left: 10 }}>
+                    <CartesianGrid strokeDasharray="3 3" />
+                    <XAxis
+                      type="number"
+                      dataKey="x"
+                      name="Breadth"
+                      domain={[0, 10]}
+                      tickCount={6}
+                    >
+                      <Label value="Breadth across AI & systems" position="bottom" style={{ fontSize: 11 }} />
+                    </XAxis>
+                    <YAxis
+                      type="number"
+                      dataKey="y"
+                      name="Depth"
+                      domain={[0, 10]}
+                      tickCount={6}
+                    >
+                      <Label
+                        value="Depth of action governance"
+                        angle={-90}
+                        position="insideLeft"
+                        style={{ textAnchor: 'middle', fontSize: 11 }}
+                      />
+                    </YAxis>
+                    <Tooltip
+                      cursor={{ strokeDasharray: '3 3' }}
+                      formatter={(_, __, item) => item && item.payload && item.payload.name}
+                      labelFormatter={() => ''}
+                    />
+                    <Scatter
+  data={competitionPositions}
+  name="Vendors"
+  shape={renderScatterPoint}
+/>
+
+
+                  </ScatterChart>
+                </ResponsiveContainer>
+              </div>
+              <ul className="list" style={{ marginTop: 6 }}>
+                <li><strong>Top-right:</strong> NeuroAudit – deep action governance, broad across stacks.</li>
+                <li><strong>Top-left:</strong> Deep but narrow (e.g., Astrix on identity).</li>
+                <li><strong>Bottom-right:</strong> Broad but shallow (suites that touch many surfaces but not deeply at action level).</li>
+                <li><strong>Bottom-left:</strong> Early or point tools – shallow &amp; narrow.</li>
+              </ul>
             </div>
           </div>
+
+          {/* 8. Seed Round Use of Funds & Milestones */}
+          <h3 className="subheading" style={{ marginTop: 24 }}>8. Seed Round Use of Funds &amp; Milestones</h3>
+          <p>
+            Jeff wants to see every dollar tied directly to milestones. Assuming a{' '}
+            <strong>$2.5M seed round</strong>, the use of funds looks like:
+          </p>
+          <table className="table">
+            <thead>
+              <tr>
+                <th>Category</th>
+                <th>%</th>
+                <th>$ Amount</th>
+                <th>Purpose</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Engineering</td>
+                <td>45%</td>
+                <td>~$1.125M</td>
+                <td>Core platform: identity, intent ingestion, policy engine, ledger, connectors</td>
+              </tr>
+              <tr>
+                <td>Founder Salaries + Ops</td>
+                <td>15%</td>
+                <td>~$375K</td>
+                <td>Minimal salaries, legal, admin, compliance</td>
+              </tr>
+              <tr>
+                <td>Design Partner Deployments</td>
+                <td>10%</td>
+                <td>~$250K</td>
+                <td>Onsite integration, workflows, connectors, feedback loops</td>
+              </tr>
+              <tr>
+                <td>Compliance &amp; Security</td>
+                <td>5%</td>
+                <td>~$125K</td>
+                <td>Pen tests, SOC2 readiness, audits, infra hardening</td>
+              </tr>
+              <tr>
+                <td>GTM / Early Sales</td>
+                <td>15%</td>
+                <td>~$375K</td>
+                <td>AE, fractional CISO advisor, marketing &amp; sales assets</td>
+              </tr>
+              <tr>
+                <td>Cloud / Infra</td>
+                <td>5%</td>
+                <td>~$125K</td>
+                <td>Simulation, event ingestion, staging &amp; testing environments</td>
+              </tr>
+              <tr>
+                <td>Contingency</td>
+                <td>5%</td>
+                <td>~$125K</td>
+                <td>Runway buffer / risk cushion</td>
+              </tr>
+            </tbody>
+          </table>
+
+          <p><strong>Milestones:</strong></p>
+          <ul className="list">
+            <li>
+              <strong>Milestone 1 (0–6 months) – Platform Core MVP:</strong> identity, intent ingestors, policy engine v1, evidence ledger, console v1.  
+              <br />✅ 1 design partner live, 1 governed workflow, &lt; 30 days to first value.
+            </li>
+            <li>
+              <strong>Milestone 2 (6–12 months) – Workflow Depth + Integrations:</strong> 10+ connectors, simulation v1, audit exports, SSO &amp; RBAC.  
+              <br />✅ 3–5 design partners, first paying customer, increasing workflow coverage.
+            </li>
+            <li>
+              <strong>Milestone 3 (12–24 months) – Commercial Readiness:</strong> connector marketplace, drift detection, partner playbooks.  
+              <br />✅ $1M+ ARR, repeatable deployments, growing enterprise pipeline.
+            </li>
+          </ul>
+
+          {/* 9. Product-Market Fit Strategy */}
+          <h3 className="subheading">9. How We Find Product-Market Fit</h3>
+          <p>
+            Jeff cares about a disciplined PMF search, not vibes. The PMF strategy is explicit:
+          </p>
+          <ul className="list">
+            <li>
+              <strong>Start with “hot pain”:</strong> workflows where AI is already acting on money,
+              PII, customers, or production systems — and where CISOs already feel audit and board pressure.
+            </li>
+            <li>
+              <strong>Wedge use cases:</strong> one workflow per customer (refund guardrails, PII exports,
+              credit limit changes, HR access) that we can govern in &lt; 30 days.
+            </li>
+            <li>
+              <strong>Design partner loop:</strong> map the workflow → govern it → prove value →
+              expand → convert to paid → capture logos and references.
+            </li>
+          </ul>
+          <p><strong>PMF metrics Jeff will like:</strong></p>
+          <ul className="list">
+            <li>50+ governed agent actions per day per customer.</li>
+            <li>Workflows per customer expanding quarter over quarter.</li>
+            <li>CISOs explicitly referencing NeuroAudit in AI risk / board decks.</li>
+            <li>Willingness-to-pay in the $100–$150/agent range for high-risk workflows.</li>
+          </ul>
+
+          {/* 10. Team Shape */}
+          <h3 className="subheading">10. Team – Seed &amp; Post-Seed Shape</h3>
+          <p>
+            Instead of a bloated org chart, Jeff wants to see a lean, execution-focused team.
+          </p>
+          <p><strong>Seed team (0–12 months, 6–8 people):</strong></p>
+          <ul className="list">
+            <li>2–3 founders – architecture, customer integration, product direction.</li>
+            <li>2 backend engineers – policy engine, ledger, simulation core.</li>
+            <li>1 integrations engineer – connectors into CRM, ticketing, payments, PII systems.</li>
+            <li>1 fullstack engineer – console UI, timelines, approvals, visualizations.</li>
+            <li>Fractional CISO – narrative, credibility, security reviews.</li>
+            <li>1 PM / chief-of-staff type – prioritization, customer feedback loops.</li>
+            <li>1 AE – added only once 2–3 design partners are live.</li>
+          </ul>
+          <p><strong>Post-seed (12–24 months, 10–14 people):</strong></p>
+          <ul className="list">
+            <li>Additional integrations &amp; simulation engineers.</li>
+            <li>Compliance specialist to harden AI Act / SOC2 / ISO mappings.</li>
+            <li>Partner manager for GRC firms and integrators.</li>
+            <li>Sales engineer to support complex POCs.</li>
+          </ul>
+
+          {/* 11. If Capital Were Not a Constraint */}
+          <h3 className="subheading">11. If Money Were Not a Constraint – GTM Acceleration</h3>
+          <p>
+            Jeff&apos;s “what if capital isn&apos;t the bottleneck?” question is about ambition. With a
+            much larger war chest (e.g., $10M+), GTM changes meaningfully:
+          </p>
+          <ul className="list">
+            <li>
+              <strong>GTM talent:</strong> full enterprise sales pod per region (AE + SE + SDR),
+              plus VP Sales and GTM Ops earlier in the journey.
+            </li>
+            <li>
+              <strong>Verticalization:</strong> parallel AI governance packs for fintech, insurance,
+              healthcare, and eCommerce instead of one-at-a-time.
+            </li>
+            <li>
+              <strong>Partner-first motion:</strong> certification programs for GRC consultancies,
+              co-sell with cloud providers, rev-share with integrators, deployment accelerators.
+            </li>
+            <li>
+              <strong>Brand &amp; trust:</strong> early analyst relations, CISO councils, events, and
+              accelerated SOC2 / ISO / AI governance certifications.
+            </li>
+          </ul>
+          <p>
+            The goal with more capital is not to burn recklessly, but to <strong>own the category
+            before the market fully hardens</strong> — to become the default “agent governance
+            layer” in the same way that Datadog became the default for observability.
+          </p>
         </div>
 
         <div className="panel" style={{ maxHeight: '80vh', overflowY: 'auto' }}>
@@ -1218,18 +1384,18 @@ function DeckSection() {
             <li>Solution overview – NeuroAudit control plane</li>
             <li>Product tour – activity log, policies, approvals, simulation</li>
             <li>Demo storyline – refund guardrail and simulation</li>
-            <li>Customer profiles & early use cases</li>
+            <li>Customer profiles &amp; early use cases</li>
             <li>Business model – SaaS with per-agent pricing</li>
             <li>Market size – TAM / SAM / SOM</li>
-            <li>Competitive landscape & positioning</li>
+            <li>Competitive landscape &amp; positioning</li>
             <li>Go-to-market plan – design partners to enterprise scale</li>
             <li>Roadmap – product and platform expansion</li>
-            <li>KPIs & high-level 3-year financials</li>
+            <li>KPIs &amp; high-level 3-year financials</li>
             <li>Team – why we are the right founders</li>
             <li>Moat – data, integrations, and policy engine</li>
-            <li>Risks & how we de-risk them</li>
+            <li>Risks &amp; how we de-risk them</li>
             <li>Vision – becoming the AI governance layer for the enterprise</li>
-            <li>Ask & use of funds</li>
+            <li>Ask &amp; use of funds</li>
           </ol>
         </div>
         <div className="panel">
